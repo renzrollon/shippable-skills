@@ -125,8 +125,8 @@ session. Inventing a precise number would look more rigorous and be a lie.
 ## Where it fits
 
 `session-retro` is a **reach-for-it-anytime standalone** at the seam between
-sessions rather than inside a build chain. Run it before `/clear`, before a
-host swap, or when a messy hour should not repeat. It does not replace a
-handoff (which carries work to another agent) and it does not replace a plan
-or review skill (which operate on the code, not on how the session spent
-itself).
+sessions rather than inside a build chain. Run it before you reset context,
+before a host swap, or when a messy hour should not repeat. It does not
+replace a handoff (which carries work to another agent) and it does not
+replace a plan or review skill (which operate on the code, not on how the
+session spent itself).

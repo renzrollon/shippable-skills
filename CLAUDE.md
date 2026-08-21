@@ -26,6 +26,6 @@ Each skill carries an `agents/openai.yaml` beside its `SKILL.md` (Codex picker m
 
 Keep `SKILL.md` under 500 lines. The description is human-facing for user-invoked skills (no "Use when the user says..." trigger lists) and model-facing for model-invoked skills (rich trigger phrasing).
 
-This repo must stay host-neutral. Do not depend on `${CLAUDE_PLUGIN_ROOT}`, a single plugin PATH, or one vendor's tool names. Discover skills from the common project and home directories; map host tool aliases when tallying.
+This repo must stay host-neutral. Do not depend on a host plugin-root env var, a single plugin PATH, or one vendor's tool names. Discover skills from the common project and home directories; map host tool aliases when tallying.
 
 No em-dashes anywhere in this repo's prose (`SKILL.md` files, docs, `README.md`, `CLAUDE.md`, comments). Where a sentence reaches for one, rewrite it instead with a comma, colon, period, parentheses, or a conjunction.

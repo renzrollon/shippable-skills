@@ -22,10 +22,9 @@ default: the pattern that fills a context window before the first edit.
 
 ## Rule 0: Query the graph before you Grep (when it exists)
 
-If the repo has a codebase graph or navigation index (for example
-`.claude/graph/graph.json`, a `GRAPH_REPORT.md`, or another documented graph
-CLI), treat it as the first locator for structural questions: "where is X",
-"who uses Y", "how does A reach B".
+If the repo has a codebase graph or navigation index, treat it as the first
+locator for structural questions: "where is X", "who uses Y", "how does A
+reach B".
 
 Then Grep/Read only for detail the graph lacks (dynamic imports, stringly
 keys, generated code, languages outside the walk).
@@ -37,8 +36,8 @@ rebuild a graph mid-retro; that is a different skill.
 
 Do not read all `docs/*.md` or concatenate spec markdown into context upfront.
 
-1. If an agent-only digest exists (for example `DOCS_DIGEST.md` or a short
-   architecture primer), Read it **once**.
+1. If an agent-only digest or short architecture primer exists, Read it
+   **once**.
 2. Task-specific drill-down: grep headings, then Read the cited span
    (`offset`/`limit` or equivalent), not the whole file.
 3. If retrieval is empty, broaden terms once, then stop sprawl.
@@ -76,8 +75,9 @@ whatever the project uses as a change/status command. Front-load these in one
 pass. Read them, then act. Do not re-traverse the tree to reconstruct what
 they already tell you.
 
-If a prior explore or grill brief exists for this topic, read it first.
-Prefer its recommendations over rediscovering the same files from chat.
+If a prior explore brief or interview notes exist for this topic, read them
+first. Prefer those recommendations over rediscovering the same files from
+chat.
 
 ## When NOT to apply
 

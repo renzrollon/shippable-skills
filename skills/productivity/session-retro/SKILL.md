@@ -38,7 +38,7 @@ for new-skill briefs. Do **not** write `SKILL.md` files yourself: only handoffs.
 | Arg / flag | Meaning |
 |------------|---------|
 | _(none)_ | Retro this whole conversation |
-| `--since <marker>` | Only the portion after a natural marker (e.g. "since the ship run", "since /clear") |
+| `--since <marker>` | Only the portion after a natural marker (e.g. "since the first edit", "since compact") |
 | `--focus tokens` / `--focus wiring` | Emit only the Token Utilization or the Wiring section |
 
 Natural language works: "retro this session", "how did this session use tokens",
@@ -72,7 +72,7 @@ paths relative to **this skill directory** (the folder that contains this
   done
   ```
 
-  Also note `workflows/*` and existing handoff dirs if the session touched them.
+  Also note workflow scripts and existing handoff dirs if the session touched them.
 
 If none of the reference files exist (the skill was copied without
 `references/`), proceed from the six-shape names and the brief headings you
@@ -96,7 +96,7 @@ From the conversation you already hold, note:
 
 - **Called artifacts**: every skill, prompt, and workflow invoked this
   session, in order. This list drives the Wiring section. Use the name the
-  host showed (`session-retro`, `tdd`, `ship`), not a guessed vendor prefix.
+  host showed (`session-retro`, `tdd`, `code-review`), not a guessed vendor prefix.
 - **Waste moments**: large full-file reads, re-derivation of state already
   reported, un-batched sequential Bash, redundant greps, backtracking after a
   wrong shape. Anchor each to where it happened.
@@ -136,7 +136,7 @@ in so next time it is automatic:
 
 | Called artifact | Observed gap this session | Proposed wire-in | Where |
 |-----------------|---------------------------|------------------|-------|
-| ship | Hand-wrote the run summary after it returned | Emit the note in its handoff step | workflows/ship.js |
+| tdd | Re-ran the full suite after each one-line edit | Run only the failing test until green, then the suite | the tdd skill's SKILL.md |
 
 If a called artifact needed nothing, omit it. If nothing was called: `No skills / workflows invoked this session.`
 
@@ -161,9 +161,8 @@ fi
 date +%Y%m%d-%H%M%S
 ```
 
-Prefer `.claude/handoff` when it already exists (Interlock and similar
-projects). Otherwise write `.agents/handoff` (skills.sh-native). Create the
-directory if needed.
+Prefer `.claude/handoff` when that directory already exists. Otherwise write
+`.agents/handoff`. Create the directory if needed.
 
 - **Wire-in** → `$HAND/wire-in-<target>-<YYYYMMDD-HHMMSS>.md`, using the
   Wire-in note format below. `<target>` = the called skill/workflow slug.

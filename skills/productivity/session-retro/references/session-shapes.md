@@ -8,7 +8,7 @@ structured from the start. The right shape chosen upfront eliminates
 backtracking, scope drift, and wasted exploration.
 
 These shapes are host-neutral. Name the skills, plans, or workflows this
-project actually uses; do not assume Interlock, OpenSpec, or any one vendor.
+project actually uses; do not assume any one vendor's command names.
 
 ---
 
@@ -101,7 +101,7 @@ must land before a design is committed.
    not rediscover the same files.
 
 **Expert version:** Investigation writes something a later session can open
-after `/clear` or a host swap. The propose step consumes that brief.
+after a context reset or a host swap. The propose step consumes that brief.
 
 **Common failure mode:** Exploring in one long single-threaded chat. Findings
 live only in history and vanish. Never converting understanding into a plan,
@@ -151,8 +151,8 @@ a reviewed change ready to ship, a large independent task set, or a structured
 review.
 
 **Flow:**
-1. Launch the project's workflow or orchestrator (ship, wave-apply, CI-driven
-   implement, and similar), not a hand-rolled loop in chat.
+1. Launch the project's workflow or orchestrator (an implement loop, a CI
+   pipeline, a review fan-out), not a hand-rolled loop in chat.
 2. Independent tasks run in parallel; dependent ones wait on gates.
 3. Intermediate results stay in script state or files, not in the conversation.
 
@@ -167,7 +167,7 @@ decision between steps.
 - Tasks can parallelize without file conflicts, or the orchestrator serializes
   collisions
 - Verification commands exist (typecheck, test, lint)
-- For a ship-style run: the plan already passed its human checkpoint
+- For an orchestrated run: the plan already passed its human checkpoint
 
 ---
 
