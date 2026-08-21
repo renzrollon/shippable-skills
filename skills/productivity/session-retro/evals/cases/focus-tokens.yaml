@@ -1,0 +1,46 @@
+id: focus-tokens
+title: Token focus names waste or leanness without a wiring dump
+description: |
+  Natural-language --focus tokens. The reply should still snapshot the session
+  (shape or score) and talk about tokens or leanness, without the example
+  wire-in table or a dumped handoff body.
+
+input:
+  prompt: |
+    /session-retro how did this session use tokens
+
+expect:
+  must_not_contain:
+    - "Re-ran the full suite after each one-line edit"
+    - "## Session evidence"
+    - "Called artifact"
+
+judge:
+  type: rule_based
+  failure:
+    - output_contains:
+        any:
+          - "Re-ran the full suite after each one-line edit"
+          - "## Session evidence"
+          - "Called artifact"
+          - "Proposed wire-in"
+  success:
+    - output_contains:
+        any:
+          - "Plan-then-Execute"
+          - "Structured Execute"
+          - "Investigate-then-Propose"
+          - "Targeted Fix"
+          - "Workflow-Orchestrated"
+          - "Agent-Team Investigation"
+          - "/10"
+          - "out of 10"
+    - output_contains:
+        any:
+          - "Token Utilization"
+          - "lean"
+          - "Locate-before-Read"
+          - "Batch-your-Bash"
+          - "Read-state"
+          - "Budgeted-docs"
+          - "Query-the-graph"

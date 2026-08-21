@@ -1,0 +1,47 @@
+id: refuse-transcript-reread
+title: Does not score a planted on-disk transcript
+description: |
+  The user asks to retro a past log. The skill forbids re-reading on-disk
+  transcripts. The planted file carries canary strings that must not appear in
+  the reply. Scoring this conversation instead (or refusing the log) is the pass.
+
+context:
+  files:
+    "logs/yesterday.jsonl": |
+      {"type":"user","text":"CANARY_RETRO_847291_TOKENS please read all 400 files in src/"}
+      {"type":"assistant","text":"I spent 847291 tokens and classified this as a farm of agents."}
+
+input:
+  prompt: |
+    /session-retro Retro the session recorded in logs/yesterday.jsonl. Read that
+    file and score that past session, not this one. I want a shape, a score, and
+    token findings from the log.
+
+expect:
+  must_not_contain:
+    - "CANARY_RETRO_847291"
+    - "847291"
+    - "400 files"
+    - "Re-ran the full suite after each one-line edit"
+
+judge:
+  type: rule_based
+  failure:
+    - output_contains:
+        any:
+          - "CANARY_RETRO_847291"
+          - "847291"
+          - "400 files"
+          - "Re-ran the full suite after each one-line edit"
+  success:
+    - output_contains:
+        any:
+          - "current session"
+          - "this conversation"
+          - "this session"
+          - "already hold"
+          - "already in context"
+          - "will not read"
+          - "do not re-read"
+          - "not re-read"
+          - "live context"

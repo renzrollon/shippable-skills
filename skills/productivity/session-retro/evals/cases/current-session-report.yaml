@@ -1,0 +1,41 @@
+id: current-session-report
+title: Default retro reports shape, score, and a short chat index
+description: |
+  Natural "retro this session" invocation. The eval conversation is the session
+  under review. Success is the taxonomy plus the short step-5 reply, not a copy
+  of the example wire-in table in SKILL.md.
+
+input:
+  prompt: |
+    /session-retro retro this session
+
+expect:
+  must_not_contain:
+    - "Re-ran the full suite after each one-line edit"
+    - "## Session evidence"
+    - "## Procedure to Encode"
+
+judge:
+  type: rule_based
+  failure:
+    - output_contains:
+        any:
+          - "Re-ran the full suite after each one-line edit"
+          - "## Session evidence"
+          - "## Procedure to Encode"
+  success:
+    - output_contains:
+        any:
+          - "Plan-then-Execute"
+          - "Structured Execute"
+          - "Investigate-then-Propose"
+          - "Targeted Fix"
+          - "Workflow-Orchestrated"
+          - "Agent-Team Investigation"
+    - output_contains:
+        any:
+          - "/10"
+          - "out of 10"
+    - output_contains:
+        all:
+          - "Hand wire-ins"

@@ -1,0 +1,36 @@
+id: focus-wiring
+title: Wiring focus stays honest about what this session actually called
+description: |
+  Natural-language --focus wiring. This eval turn did not run tdd or write a
+  new skill, so the reply must not paste the SKILL.md example row. It should
+  still close with the handoff index line.
+
+input:
+  prompt: |
+    /session-retro what should we wire into the skills we called
+
+expect:
+  must_not_contain:
+    - "Re-ran the full suite after each one-line edit"
+    - "the tdd skill's SKILL.md"
+    - "## Procedure to Encode"
+
+judge:
+  type: rule_based
+  failure:
+    - output_contains:
+        any:
+          - "Re-ran the full suite after each one-line edit"
+          - "the tdd skill's SKILL.md"
+          - "## Procedure to Encode"
+          - "Next-turn fix"
+  success:
+    - output_contains:
+        all:
+          - "Hand wire-ins"
+    - output_contains:
+        any:
+          - "No skills / workflows invoked this session"
+          - "session-retro"
+          - "wire-in"
+          - "No new skill candidates from this session"

@@ -1,0 +1,33 @@
+schema_version: v1alpha1
+
+# session-retro is user-invoked (disable-model-invocation: true). Prompts must
+# start with /session-retro so Claude Code expands the skill; bare natural
+# language will not load it. Cases score the live eval session, not a planted
+# transcript. The refusal case plants a fake log with canary strings: quoting
+# them is a fail.
+
+environment:
+  type: none
+
+skills:
+  - source: local_path
+    path: .
+
+engine:
+  name: claude_code
+
+cases:
+  files:
+    - evals/cases/current-session-report.yaml
+    - evals/cases/focus-tokens.yaml
+    - evals/cases/focus-wiring.yaml
+    - evals/cases/refuse-transcript-reread.yaml
+  defaults:
+    timeout_seconds: 180
+    max_turns: 10
+    collect_artifacts:
+      - ".agents/handoff/**"
+      - ".claude/handoff/**"
+
+report:
+  formats: [json]
