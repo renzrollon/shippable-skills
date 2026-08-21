@@ -1,0 +1,22 @@
+{
+  "name": "shippable-skills",
+  "displayName": "Shippable Skills",
+  "version": "0.1.0",
+  "description": "Shippable agent skills for real sessions: retro the conversation you are still in, flag token waste, and wire the lesson back into the skills you called.",
+  "author": {
+    "name": "Carl Rollon",
+    "url": "https://github.com/renzrollon"
+  },
+  "homepage": "https://github.com/renzrollon/shippable-skills",
+  "repository": "https://github.com/renzrollon/shippable-skills",
+  "license": "MIT",
+  "keywords": [
+    "skills",
+    "session-retro",
+    "productivity",
+    "token-economy"
+  ],
+  "skills": [
+    "./skills/productivity/session-retro"
+  ]
+}

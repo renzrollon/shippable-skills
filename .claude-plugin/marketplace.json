@@ -1,0 +1,20 @@
+{
+  "name": "shippable-skills",
+  "description": "Shippable agent skills for Cursor, Copilot, Codex, Claude Code, and other Agent Skills hosts.",
+  "owner": {
+    "name": "Carl Rollon",
+    "url": "https://github.com/renzrollon"
+  },
+  "plugins": [
+    {
+      "name": "shippable-skills",
+      "source": "./",
+      "description": "Session retro and other shippable agent skills. Plug-and-play across coding agents.",
+      "version": "0.1.0",
+      "category": "productivity",
+      "author": {
+        "name": "Carl Rollon"
+      }
+    }
+  ]
+}

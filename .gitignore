@@ -1,0 +1,20 @@
+# macOS
+.DS_Store
+
+# Editors
+.idea/
+.vscode/
+*.swp
+
+# Node
+node_modules/
+*.log
+
+# Agent runtime (never commit generated session state)
+.agents/handoff/
+.claude/handoff/
+.claude/settings.local.json
+
+# Backups
+*.bak
+*.bak.*

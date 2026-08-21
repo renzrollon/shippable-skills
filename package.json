@@ -1,0 +1,28 @@
+{
+  "name": "shippable-skills",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Shippable agent skills: session retro and more, installable on Cursor, Copilot, Codex, Claude Code, and other Agent Skills hosts.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/renzrollon/shippable-skills.git"
+  },
+  "homepage": "https://github.com/renzrollon/shippable-skills",
+  "author": {
+    "name": "Carl Rollon",
+    "url": "https://github.com/renzrollon"
+  },
+  "keywords": [
+    "agent-skills",
+    "skills",
+    "session-retro",
+    "cursor",
+    "copilot",
+    "codex",
+    "claude-code"
+  ],
+  "scripts": {
+    "validate": "claude plugin validate . --strict"
+  }
+}

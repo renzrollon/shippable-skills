@@ -1,0 +1,5 @@
+interface:
+  display_name: "Session retro"
+  short_description: "Retro the current session: score, token waste, skill wire-ins"
+policy:
+  allow_implicit_invocation: false
