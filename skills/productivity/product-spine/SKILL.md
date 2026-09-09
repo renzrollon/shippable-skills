@@ -179,8 +179,12 @@ code, point at the task path if one exists, and stop. Skip later steps.
 
 - `draft` / `review` / `capability` when those words (or their map) are
   present, including `draft N` after a threads reply.
-- **Otherwise** (no args, `threads`, "what's next", "suggest features"):
-  threads. Do **not** list modes and stop.
+- **Otherwise** (no args, bare `/product-spine`, `threads`, "what's next",
+  "suggest features"): run **threads** now, this turn. Never reply with a mode
+  menu or a "which mode?" question: bare invocation **is** threads, not a
+  prompt to disambiguate. Gather (fan-out, or sequential if the host has no
+  subagent tool), then emit the mermaid `## Thread map` and cards. Empty-handed
+  still emits a map, marked `thin`. Do **not** list modes and stop.
 
 ### 1. Gather
 
