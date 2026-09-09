@@ -1,0 +1,71 @@
+id: review-task-verdict
+title: Review of a thin task says not ready to flip
+description: |
+  Planted task has empty acceptance criteria. Review is read-only and must
+  emit the contract headings plus Ready to flip: no.
+
+context:
+  files:
+    "docs/product/one-pager/current.md": |
+      # One-pager: payments
+
+      ## 4. Roadmap initiatives
+
+      ### Recover failed payments
+
+      - Serves bet: recovery.
+    "docs/product/epics/2026-08-15-payment-recovery.md": |
+      # Payment recovery
+
+      Status: draft
+      Ladders to: docs/product/one-pager/current.md §4 Recover failed payments
+    "tasks/2026-09-01-x.md": |
+      # Incomplete retry task
+
+      Status: draft
+      Part of: docs/product/epics/2026-08-15-payment-recovery.md
+
+      ## 1. User need
+
+      - Who: a payer
+      - Friction: failed charge
+      - Outcome: retry
+
+      ## 2. Platform pieces
+
+      primer absent
+
+      ## 3. Acceptance criteria
+
+      ## 4. Reasons for product decision
+
+      none
+
+input:
+  prompt: |
+    /product-spine review tasks/2026-09-01-x.md
+
+expect:
+  must_contain:
+    - "Strong"
+    - "Missing"
+    - "Ladder"
+    - "Next step"
+    - "Ready to flip: no"
+  must_not_contain:
+    - "Ready to flip: yes"
+
+judge:
+  type: rule_based
+  failure:
+    - output_contains:
+        any:
+          - "Ready to flip: yes"
+  success:
+    - output_contains:
+        all:
+          - "Strong"
+          - "Missing"
+          - "Ladder"
+          - "Next step"
+          - "Ready to flip: no"

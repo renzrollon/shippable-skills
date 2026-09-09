@@ -1,0 +1,28 @@
+id: capability-no-primer
+title: Capability with no primer cannot confirm
+description: |
+  No platform-primer.md on disk. Capability mode must answer Cannot confirm
+  and name the primer path. It must not claim Yes today from guesswork.
+
+input:
+  prompt: |
+    /product-spine capability "can users retry a payment without re-uploading documents?"
+
+expect:
+  must_contain:
+    - "Cannot confirm"
+    - "platform-primer"
+  must_not_contain:
+    - "Yes today"
+
+judge:
+  type: rule_based
+  failure:
+    - output_contains:
+        any:
+          - "Yes today"
+  success:
+    - output_contains:
+        all:
+          - "Cannot confirm"
+          - "platform-primer"

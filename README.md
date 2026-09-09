@@ -8,7 +8,7 @@
 npx skills add renzrollon/shippable-skills
 ```
 
-Then type `/session-retro` to score this conversation.
+Then type `/session-retro` to score this conversation, or `/product-spine` to act as product owner for your repo.
 
 - **The lead skill retros the live session.** [session-retro](./skills/productivity/session-retro/) scores the conversation you are still in and folds repeatable steps back into the skills you called.
 - **Install the folder, keep the files.** You keep ordinary skill files in your project or home directory, so the next lesson stays. Updates later: `npx skills update`.
@@ -41,8 +41,23 @@ The host copies the skill folder. You invoke the skill. The model follows `SKILL
 | `/session-retro` | The host loads [session-retro](./skills/productivity/session-retro/) and runs the retro on this conversation |
 | `/session-retro --focus tokens` | Same snapshot, token section only |
 | `/session-retro --focus wiring` | Same snapshot, wire-in section only |
+| `/product-spine` | The host loads [product-spine](./skills/productivity/product-spine/) and proposes work threads from the repo |
 
-You type `/session-retro`. The agent will not start it in the middle of your work.
+You type `/session-retro` or `/product-spine`. The agent will not start either in the middle of your work.
+
+## Why product-spine
+
+Most PM skill libraries teach a method in chat: a story template, a RICE table, a PRD outline. The artefact, if any, does not live next to the code, and nothing checks that a unit of work still ladders to a strategy bet.
+
+`product-spine` is repo-native. Bare invocation is an engineer-as-PO coach: it fans out over the repo and proposes Feature / Improvement / Fix threads on a mermaid map. Picking a thread lands it on three files at fixed paths. It refuses to invent the platform.
+
+- **Threads before templates.** What to work on next, grounded in evidence (or marked `thin`), not a blank form. Draft is how a picked thread lands.
+- **A greppable ladder** from task to epic to one-pager initiative, so "every task serving this bet" and "every task if we kill this bet" are grep lines, not a hunt through chat.
+- **No PRD and no user stories.** The task file's four sections (need, platform pieces, acceptance, reasons) are the unit; discovery sits in the epic's sibling folder.
+- **Primer-grounded capability.** "Can users do X today" cites `docs/product/context/platform-primer.md`, or answers `Cannot confirm` if that file is missing.
+- **Decisions inline.** Trade-offs land in the task, the epic, or the one-pager change log. There is no decisions folder.
+
+New files stay `Status: draft` until you flip them. Docs: [product-spine](./docs/productivity/product-spine.md).
 
 ## Why this
 
@@ -64,9 +79,11 @@ The [skills](https://github.com/vercel-labs/skills) CLI is the installer, not a 
 
 ## Status
 
-`session-retro` is the promoted skill. Beta work stays in `skills/in-progress/` and is not in the plugin. The package on npm is not published; install from GitHub via `npx skills add`.
+`session-retro` and `product-spine` are the promoted skills. Beta work stays in `skills/in-progress/` and is not in the plugin. The package on npm is not published; install from GitHub via `npx skills add`.
 
 Dated gate results for `session-retro` 0.1.0 (21 Aug 2026) are in its [changelog](./skills/productivity/session-retro/CHANGELOG.md).
+
+`product-spine` **0.2.0** has not been through this gate yet. That run is the next release step.
 
 ## Skills
 
@@ -77,6 +94,7 @@ These split on one axis: who can invoke them. **User-invoked** skills are reacha
 **User-invoked**
 
 - **[session-retro](./skills/productivity/session-retro/)**: Retro the current session. Score it against session shapes, flag token waste with next-turn fixes, and propose wire-ins into the skills this conversation actually called.
+- **[product-spine](./skills/productivity/product-spine/)**: Help an engineer act as product owner: suggest Feature / Improvement / Fix threads from the repo, then draft, review, and capability-check the one-pager, epics, and tasks that land them. Writes artefacts, never code.
 
 **Model-invoked**
 
@@ -88,6 +106,8 @@ None yet.
 | --- | --- |
 | [session-retro](./skills/productivity/session-retro/) | Human README. The URL to share |
 | [session-retro docs](./docs/productivity/session-retro.md) | When to reach for it, questions, what working looks like |
+| [product-spine](./skills/productivity/product-spine/) | Human README. The URL to share |
+| [product-spine docs](./docs/productivity/product-spine.md) | When to reach for it, questions, what working looks like |
 | [CONTRIBUTING.md](./CONTRIBUTING.md) | Dev commands, release gate, SkillSpector suppress |
 | [CLAUDE.md](./CLAUDE.md) | Bucket rules, invocation polarity, docs contract |
 

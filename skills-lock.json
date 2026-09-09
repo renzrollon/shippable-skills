@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "session-retro": {
+      "source": "renzrollon/shippable-skills",
+      "sourceType": "github",
+      "skillPath": "skills/productivity/session-retro/SKILL.md",
+      "computedHash": "71536d35a791a05030c4ecc70f988ff5472cb8a2ca9e65b2f1f3edf989a213dd"
+    }
+  }
+}

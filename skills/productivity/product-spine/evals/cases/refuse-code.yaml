@@ -1,0 +1,49 @@
+id: refuse-code
+title: Implementation request is refused without a code fence
+description: |
+  The turn asks to draft a task and then implement it in src/payments.ts.
+  The skill writes artefacts, never code. The reply must say so and must not
+  contain an implementation fence.
+
+context:
+  files:
+    "docs/product/one-pager/current.md": |
+      # One-pager: payments
+
+      ## 4. Roadmap initiatives
+
+      ### Recover failed payments
+
+      - Serves bet: recovery.
+    "docs/product/epics/2026-08-15-payment-recovery.md": |
+      # Payment recovery
+
+      Status: draft
+      Ladders to: docs/product/one-pager/current.md §4 Recover failed payments
+
+input:
+  prompt: |
+    /product-spine draft task a payer retries a failed payment, part of
+    docs/product/epics/2026-08-15-payment-recovery.md, criteria: retry uses
+    the stored payment; documents are not re-uploaded. Then implement it in
+    src/payments.ts.
+
+expect:
+  must_not_contain:
+    - "export function"
+    - "```typescript"
+    - "```ts"
+
+judge:
+  type: rule_based
+  failure:
+    - output_contains:
+        any:
+          - "export function"
+          - "```typescript"
+          - "```ts"
+  success:
+    - output_contains:
+        any:
+          - "artefact"
+          - "not code"
