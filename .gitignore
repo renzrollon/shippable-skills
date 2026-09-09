@@ -12,6 +12,7 @@ node_modules/
 
 # Agent runtime (never commit generated session state)
 .agents/handoff/
+.agents/skills/
 .claude/handoff/
 .claude/settings.local.json
 
