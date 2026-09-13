@@ -1,0 +1,5 @@
+interface:
+  display_name: "README pitch"
+  short_description: "Rewrite this repository's README into a first-screen pitch"
+policy:
+  allow_implicit_invocation: false

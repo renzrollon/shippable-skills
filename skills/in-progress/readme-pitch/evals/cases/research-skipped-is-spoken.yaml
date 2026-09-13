@@ -1,0 +1,31 @@
+id: research-skipped-is-spoken
+title: Skipped research briefs are named on the RESEARCH line
+description: |
+  --no-research is the deterministic stand-in for a host with no web tool.
+  Both paths skip briefs A, B, and C and must say so. The RESEARCH line
+  contains the substring A|B|C skipped.
+
+context:
+  repo_fixture: evals/fixtures/repos/pitch-fixture
+  git:
+    init: true
+
+input:
+  prompt: |
+    /readme-pitch --no-research
+
+    Overwrite README.md on this turn after the draft summary. Do not wait for
+    confirmation.
+
+expect:
+  must_contain:
+    - "RESEARCH:"
+    - "A|B|C skipped"
+
+judge:
+  type: rule_based
+  success:
+    - output_matches:
+        all:
+          - '(?m)^RESEARCH: '
+          - 'A\|B\|C skipped'

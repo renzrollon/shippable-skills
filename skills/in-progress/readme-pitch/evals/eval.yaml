@@ -1,0 +1,43 @@
+schema_version: v1alpha1
+
+# readme-pitch is user-invoked (disable-model-invocation: true). Prompts must
+# start with /readme-pitch so Claude Code expands the skill. Cases share one
+# fixture repo (300-line README, three test pins, one README-anchor consumer),
+# except already-pitched-stops and refuse-no-readme, which inline their files.
+# Judges are rule-based or workspace scripts. No LLM judge.
+
+environment:
+  type: none
+
+skills:
+  - source: local_path
+    path: .
+
+engine:
+  name: claude_code
+
+cases:
+  files:
+    - evals/cases/report-contract.yaml
+    - evals/cases/hero-before-code.yaml
+    - evals/cases/pitch-by-line-30.yaml
+    - evals/cases/pins-kept.yaml
+    - evals/cases/anchor-repointed.yaml
+    - evals/cases/no-fact-lost.yaml
+    - evals/cases/research-skipped-is-spoken.yaml
+    - evals/cases/refuse-no-readme.yaml
+    - evals/cases/decisions-assumed.yaml
+    - evals/cases/already-pitched-stops.yaml
+  defaults:
+    timeout_seconds: 600
+    max_turns: 30
+    collect_artifacts:
+      - "README.md"
+      - "docs/**"
+      - "CONTRIBUTING.md"
+      - "CHANGELOG.md"
+      - ".agents/handoff/**"
+      - ".claude/handoff/**"
+
+report:
+  formats: [json]

@@ -1,0 +1,92 @@
+id: already-pitched-stops
+title: Stops without asking when the README already meets the bar
+description: |
+  This README is under 150 lines and has an image before the first code
+  block. Phase 0 must say it meets the bar, name --force as the override,
+  make no edits, and emit no report block. It must not ask whether to
+  continue.
+
+context:
+  git:
+    init: true
+  files:
+    "package.json": |
+      {
+        "name": "tiny-tool",
+        "private": true,
+        "version": "0.0.0",
+        "description": "Rename files by rule from your terminal.",
+        "bin": { "tiny-tool": "./bin/tiny-tool.js" }
+      }
+    "bin/tiny-tool.js": |
+      console.log("tiny-tool");
+    "README.md": |
+      # tiny-tool
+
+      **Rename files by rule from your terminal, for people who already live in the shell.**
+
+      [![CI](https://github.com/example/tiny-tool/actions/workflows/ci.yml/badge.svg)](https://github.com/example/tiny-tool/actions) [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+
+      <img src="docs/assets/hero.png" width="900" alt="tiny-tool renaming a folder">
+
+      ```bash
+      npx tiny-tool rename "*.jpeg" "{stem}.jpg"   # dry run, prints the plan
+      npx tiny-tool rename --apply                 # applies the last plan
+      ```
+
+      - **Dry run by default.** Nothing moves until you pass --apply.
+      - **One rule language.** Globs in, a template out.
+      - **Undo file.** Every apply writes a reversible log.
+
+      ## Install
+
+      Requires Node.js 20 or newer.
+
+      ```bash
+      npm install -g tiny-tool
+      ```
+
+      ## License
+
+      MIT.
+
+constraints:
+  timeout_seconds: 120
+  max_turns: 6
+
+input:
+  prompt: |
+    /readme-pitch --no-research
+
+expect:
+  files_exist:
+    - README.md
+  file_contains:
+    - path: README.md
+      content: "Every apply writes a reversible log."
+    - path: README.md
+      content: "for people who already live in the shell."
+  must_contain:
+    - "--force"
+  must_not_contain:
+    - "PITCH COMPLETE BY:"
+    - "DECISIONS:"
+    - "PINS KEPT:"
+
+judge:
+  type: rule_based
+  failure:
+    - output_contains:
+        any:
+          - "PITCH COMPLETE BY:"
+          - "DECISIONS:"
+          - "PINS KEPT:"
+          - "Pitch brief for"
+  success:
+    - output_contains:
+        any:
+          - "--force"
+    - output_contains:
+        any:
+          - "meets the bar"
+          - "already"

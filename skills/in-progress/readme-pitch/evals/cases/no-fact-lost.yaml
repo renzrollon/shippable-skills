@@ -1,0 +1,29 @@
+id: no-fact-lost
+title: Sentinel facts planted only in the old README land in docs
+description: |
+  Five sentinel facts lived only in the long README. After the rewrite each
+  appears in some file under docs/, or in a root markdown file other than
+  README.md (CONTRIBUTING.md, CHANGELOG.md, a CLI reference), which are the
+  homes the relocation checklist names.
+
+context:
+  repo_fixture: evals/fixtures/repos/pitch-fixture
+  git:
+    init: true
+
+input:
+  prompt: |
+    /readme-pitch --no-research
+
+    Overwrite README.md on this turn after the draft summary. Do not wait for
+    confirmation. Relocate before cutting: do not drop a fact that has no docs
+    home.
+
+expect:
+  files_exist:
+    - README.md
+
+judge:
+  type: script
+  script_path: evals/fixtures/scripts/grade-sentinels.sh
+  timeout_seconds: 30

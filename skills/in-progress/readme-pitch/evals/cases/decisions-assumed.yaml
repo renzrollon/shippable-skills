@@ -1,0 +1,31 @@
+id: decisions-assumed
+title: Default mode takes the recommended pitch decisions and says so
+description: |
+  No --ask and no --brief. The skill must not ask a question. It derives the
+  five pitch decisions from the inventory, writes a readme-pitch-brief file
+  to the handoff dir with source assumed, and reports a DECISIONS line that
+  starts with assumed and names archetype cli (the fixture has bin in
+  package.json).
+
+context:
+  repo_fixture: evals/fixtures/repos/pitch-fixture
+  git:
+    init: true
+
+input:
+  prompt: |
+    /readme-pitch --no-research
+
+    Overwrite README.md on this turn after the draft summary. Do not wait for
+    confirmation.
+
+expect:
+  files_exist:
+    - README.md
+  must_contain:
+    - "DECISIONS: assumed"
+
+judge:
+  type: script
+  script_path: evals/fixtures/scripts/grade-brief.sh
+  timeout_seconds: 30

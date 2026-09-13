@@ -1,0 +1,29 @@
+id: hero-before-code
+title: Hero sits before the first code fence and is reported under line 15
+description: |
+  Output README has an <img or ![ before the first code fence. The report
+  HERO line is under 15 and says the hero is before the first code block.
+
+context:
+  repo_fixture: evals/fixtures/repos/pitch-fixture
+  git:
+    init: true
+
+input:
+  prompt: |
+    /readme-pitch --no-research
+
+    Overwrite README.md on this turn after the draft summary. Do not wait for
+    confirmation.
+
+expect:
+  files_exist:
+    - README.md
+  must_contain:
+    - "HERO:"
+    - "before first code block: yes"
+
+judge:
+  type: script
+  script_path: evals/fixtures/scripts/grade-hero.sh
+  timeout_seconds: 30

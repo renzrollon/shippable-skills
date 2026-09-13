@@ -1,0 +1,48 @@
+id: report-contract
+title: Reply ends with the Phase 8 report block
+description: |
+  --no-research rewrite of the pitch-fixture README. Success is the
+  machine-parse report at the end of the reply, with pins kept and links
+  resolving.
+
+context:
+  repo_fixture: evals/fixtures/repos/pitch-fixture
+  git:
+    init: true
+
+input:
+  prompt: |
+    /readme-pitch --no-research
+
+    Overwrite README.md on this turn after the draft summary. Do not wait for
+    confirmation.
+
+expect:
+  files_exist:
+    - README.md
+  must_contain:
+    - "README:"
+    - "HERO:"
+    - "PITCH COMPLETE BY:"
+    - "PINS KEPT:"
+    - "LINKS:"
+    - "DECISIONS:"
+    - "RESEARCH:"
+    - "TESTS:"
+    - "OUTSIDE THIS CHANGE:"
+
+judge:
+  type: rule_based
+  success:
+    - output_matches:
+        all:
+          - '(?m)^README: \d+ -> \d+ lines$'
+          - '(?m)^HERO: line \d+, before first code block: (yes|no)$'
+          - '(?m)^PITCH COMPLETE BY: line \d+$'
+          - '(?m)^PINS KEPT: 3/3$'
+          - '(?m)^LINKS: all resolve'
+          - '(?m)^MOVED: '
+          - '(?m)^DECISIONS: (assumed|asked|brief \S+) \| '
+          - '(?m)^RESEARCH: '
+          - '(?m)^TESTS: '
+          - '(?m)^OUTSIDE THIS CHANGE: '

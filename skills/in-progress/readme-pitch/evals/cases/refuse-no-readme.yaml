@@ -1,0 +1,55 @@
+id: refuse-no-readme
+title: Stops in a git repo that has no README
+description: |
+  The skill needs a git repository with a README.md. This workspace is a git
+  repo without one. The reply says so and makes no edits.
+
+context:
+  git:
+    init: true
+  files:
+    "package.json": |
+      {
+        "name": "no-readme-repo",
+        "private": true,
+        "version": "0.0.0"
+      }
+    "src/index.js": |
+      console.log("no readme here");
+
+constraints:
+  timeout_seconds: 120
+  max_turns: 6
+
+input:
+  prompt: |
+    /readme-pitch --no-research
+
+expect:
+  files_not_exist:
+    - README.md
+  must_not_contain:
+    - "PINS KEPT:"
+    - "PITCH COMPLETE BY:"
+
+judge:
+  type: rule_based
+  failure:
+    - output_contains:
+        any:
+          - "PINS KEPT:"
+          - "PITCH COMPLETE BY:"
+  success:
+    - output_contains:
+        any:
+          - "README.md"
+          - "README"
+    - output_contains:
+        any:
+          - "need"
+          - "needs"
+          - "required"
+          - "missing"
+          - "without"
+          - "no README"
+          - "No README"

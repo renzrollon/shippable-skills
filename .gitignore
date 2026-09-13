@@ -14,6 +14,7 @@ node_modules/
 .agents/handoff/
 .claude/handoff/
 .claude/settings.local.json
+.claude/graph/
 
 # Backups
 *.bak

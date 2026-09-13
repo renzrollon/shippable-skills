@@ -1,0 +1,28 @@
+id: pitch-by-line-30
+title: Pitch finishes by line 30 and the first H2 is not later
+description: |
+  PITCH COMPLETE BY is 30 or lower, and the first ## heading in the output
+  README is at or before line 30.
+
+context:
+  repo_fixture: evals/fixtures/repos/pitch-fixture
+  git:
+    init: true
+
+input:
+  prompt: |
+    /readme-pitch --no-research
+
+    Overwrite README.md on this turn after the draft summary. Do not wait for
+    confirmation.
+
+expect:
+  files_exist:
+    - README.md
+  must_contain:
+    - "PITCH COMPLETE BY:"
+
+judge:
+  type: script
+  script_path: evals/fixtures/scripts/grade-pitch.sh
+  timeout_seconds: 30

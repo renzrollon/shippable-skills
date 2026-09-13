@@ -1,0 +1,34 @@
+id: pins-kept
+title: Test-pinned README strings survive and the fixture tests pass
+description: |
+  All three pinned strings remain in the new README, and the fixture's
+  npm test (three node:test assertions) passes when run.
+
+context:
+  repo_fixture: evals/fixtures/repos/pitch-fixture
+  git:
+    init: true
+
+input:
+  prompt: |
+    /readme-pitch --no-research
+
+    Overwrite README.md on this turn after the draft summary. Do not wait for
+    confirmation. Do not edit, weaken, or delete the README tests.
+
+expect:
+  files_exist:
+    - README.md
+    - test/readme.test.mjs
+  file_contains:
+    - path: README.md
+      content: "npx pitch-kit init"
+    - path: README.md
+      content: "Compatible with Node.js 20.19 or newer"
+    - path: README.md
+      content: "License: MIT"
+
+judge:
+  type: script
+  script_path: evals/fixtures/scripts/grade-pins.sh
+  timeout_seconds: 30

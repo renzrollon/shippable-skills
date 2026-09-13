@@ -1,0 +1,18 @@
+{
+  "name": "pitch-fixture-eval",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Eval fixture: a CLI that should pitch in five seconds and currently does not.",
+  "license": "MIT",
+  "bin": {
+    "pitch-kit": "./bin/pitch-kit.js"
+  },
+  "files": [
+    "bin",
+    "src",
+    "README.md"
+  ],
+  "scripts": {
+    "test": "node --test test/readme.test.mjs"
+  }
+}

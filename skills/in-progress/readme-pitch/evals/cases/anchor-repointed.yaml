@@ -1,0 +1,26 @@
+id: anchor-repointed
+title: README-anchor consumer is repointed to a real file and heading
+description: |
+  docs/guide.md used to link to README.md#configuration. After the rewrite
+  it must link to a file and heading that exist, not the old README slug.
+
+context:
+  repo_fixture: evals/fixtures/repos/pitch-fixture
+  git:
+    init: true
+
+input:
+  prompt: |
+    /readme-pitch --no-research
+
+    Overwrite README.md on this turn after the draft summary. Do not wait for
+    confirmation.
+
+expect:
+  files_exist:
+    - docs/guide.md
+
+judge:
+  type: script
+  script_path: evals/fixtures/scripts/grade-anchors.sh
+  timeout_seconds: 30
