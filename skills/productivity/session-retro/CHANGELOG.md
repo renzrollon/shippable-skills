@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.2.0 (unreleased)
+
+Token Utilization now scores the same dimensions Anthropic's `session-report`
+looks for, without reading logs or inventing cache numbers.
+
+- Findings first: 3-5 share-of-session lines (`most`, `~half`, `5×`, `lean`),
+  then moments, then 1-4 recommendations that also feed Wiring.
+- New tool-economy rules: Attribute-to-skill, Keep-the-prefix,
+  Budget-subagents, One-prompt-share. Existing locate/batch/state rules stay.
+- `--focus tokens` still forbids wiring tables and exact uncached / cache-read
+  / output tables. Point at `session-report` for a 7-day numeric Claude Code
+  report; this skill does not run it.
+
 ## 0.1.0 (2026-08-21)
 
 First shipped release. Gate run the same day: `validate → evaluate → security → release`.

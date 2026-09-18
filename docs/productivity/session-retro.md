@@ -23,7 +23,7 @@ its own. Pass `--since <marker>` to limit the window, or `--focus tokens` /
 | Situation | Why this skill |
 | --- | --- |
 | Mid- or end-of-session, you want a score | Shape + 1-10 score while the moments are still named |
-| Tokens felt expensive | Findings in relative magnitude, each with a next-turn fix |
+| Tokens felt expensive | Share findings (skill, prompt, prefix, subagents) plus a next-turn fix |
 | You just improvised around a skill | A wire-in note names the file that should have done it |
 | The session invented a procedure no skill covers | A skill-candidate brief, not a SKILL.md written on the spot |
 
@@ -53,9 +53,10 @@ retro-ing is the conversation it is running inside.
 A short chat report, in a deliberate order:
 
 1. **Session Snapshot**: the shape it matched and a 1-10 score.
-2. **Token Utilization**: the headline. Concrete moments where tokens went to
-   waste, each tagged with the tool-economy rule it broke and the different
-   action for next turn.
+2. **Token Utilization**: the headline. Share of this session's work (which
+   skill, which user turn, prefix stability, subagent budget), then concrete
+   moments tagged with the tool-economy rule they broke, then 1-4
+   recommendations that also feed Wiring.
 3. **What Could Have Been Done Better**: only when the score is below 8/10,
    one shape or execution fix.
 4. **Wiring**: for every skill and workflow the session called, the
@@ -71,7 +72,8 @@ It does not dump a report and then dump it again.
 - **It has no exact token counts, and does not pretend to.** Per-turn token
   numbers are not available to a skill running mid-session, so every finding
   is stated in *relative magnitude*, anchored to a real moment. A
-  precise-looking number would be a fabricated one.
+  precise-looking cache-hit percent would be a fabricated one. Share figs
+  (`most`, `5×`, `lean`) are observational, not billed token percents.
 - **It sees this session and only this session.** There is no cross-session
   view, no day rollup. That is the trade for running live.
 - **A wire-in is a proposal, not a patch.** It names a target file and the
@@ -110,6 +112,13 @@ written.
 No. It only sees the live conversation. A tool that scored other sessions
 would need the logs this one refuses to read.
 
+**How is this different from Anthropic's session-report?**
+`session-report` scores past Claude Code logs for exact cache numbers over a
+week (HTML, cache-hit percent, cache breaks). `session-retro` scores the
+conversation you are still in: skill share, prompt share, prefix stability,
+and subagent budget in relative magnitude, plus a next-turn fix and a
+wire-in. It will not read `~/.claude/projects` or run that analyzer.
+
 **Why relative magnitude instead of token numbers?**
 The host does not give per-turn token counts to a skill running inside the
 session. Inventing a precise number would look more rigorous and be a lie.
@@ -118,8 +127,10 @@ session. Inventing a precise number would look more rigorous and be a lie.
 
 - The snapshot names a shape you recognize and a score you could defend from
   the last hour of work, without opening `SKILL.md`.
-- Each token finding points at a moment ("the three sequential greps") and a
-  different next action, not a lecture about context windows.
+- Token findings open with a share of this session (`most` of the work was
+  the skill until the next human turn, or `lean`), then a moment and a
+  different next action, not a lecture about context windows and not a
+  cache-read table.
 - Wire-in paths exist on disk, and each names a file that is actually in the
   project or the installed skill set.
 - The chat reply is short: snapshot, paths, one line per recommendation. The

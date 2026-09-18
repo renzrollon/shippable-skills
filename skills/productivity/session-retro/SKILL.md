@@ -5,7 +5,7 @@ license: MIT
 argument-hint: "[--since <marker>] [--focus tokens|wiring]"
 disable-model-invocation: true
 metadata:
-  version: 0.1.0
+  version: 0.2.0
 ---
 
 Retro the **current session**: the conversation you are in right now. Score it
@@ -90,8 +90,9 @@ read a file to find "real" data.
    on-disk session log to compute them. Self-check: if your reply contains a
    table of exact token numbers (uncached input, cache write/read, output), you
    have read a transcript, which is the forbidden path, delete it and describe
-   spend in **relative magnitude** instead. If the session is lean, say `lean`
-   and name the one thing that kept it lean.
+   spend in **relative magnitude** instead. Findings use short relative figs
+   (`most`, `~half`, `5×`, `lean`), never a claimed cache-hit percent. If the
+   session is lean, say `lean` and name the one thing that kept it lean.
 3. **The final line of every reply except `--focus tokens` is this sentinel,
    copied character-for-character**, no personalization (not "Hand this wire-in
    to..."), even when nothing was called and even when you are unsure what the
@@ -117,7 +118,7 @@ read a file to find "real" data.
 |------------|---------|
 | _(none)_ | Retro this whole conversation: Snapshot, Token Utilization, Wiring |
 | `--since <marker>` | Only the portion after a natural marker (e.g. "since the first edit", "since compact") |
-| `--focus tokens` | Emit the Snapshot plus Token Utilization only. Do **not** emit the Wiring section, its table, or its column headers (`Called artifact`, `Proposed wire-in`). |
+| `--focus tokens` | Emit the Snapshot plus Token Utilization only (findings, moments, recs). Do **not** emit the Wiring section, its table, or its column headers (`Called artifact`, `Proposed wire-in`). |
 | `--focus wiring` | Emit the Snapshot plus the Wiring section only, and still close with the step-5 `Hand wire-ins` line. |
 
 Natural language maps to the flags: "retro this session" (none), "how did this
@@ -206,6 +207,17 @@ From the conversation you already hold, note:
 - **Waste moments**: large full-file reads, re-derivation of state already
   reported, un-batched sequential Bash, redundant greps, backtracking after a
   wrong shape. Anchor each to where it happened.
+- **Skill-attributed spans**: from each Skill or slash invocation until the
+  next human message, that work belongs to the skill (Attribute-to-skill). Do
+  not treat auto-continuations as a new prompt.
+- **Prompt-level dominance**: which user turn dominated, including subagents
+  it spawned (One-prompt-share). Internal compact or summary forks are not
+  billed to a prompt.
+- **Prefix-break moments**: clustered mid-task rebuilds (Keep-the-prefix):
+  model or effort switch, MCP or plugin or tool-set change, compact or clear
+  mid-task, a single huge dump. Skill invocation is not a prefix break.
+- **Subagent spawn cost**: count, whether locate already had the answer,
+  whether the spawn prompt pasted a dump (Budget-subagents).
 
 ### 3. Analyze: output this structure in chat (concise)
 
@@ -217,8 +229,9 @@ Session Snapshot and the Wiring section (and its step-5 `Hand wire-ins` close);
 skip Token Utilization. Produce the structure even for a thin or near-empty
 session (including a retro-only or single-question session): it still gets a
 Snapshot with one of the six shapes and a score, a `Token Utilization` section
-(say it was lean and name the one thing that kept it lean, in relative terms),
-and the `No skills / workflows invoked this session.` line. Do not bail out with
+(findings, lean-or-moments, recs; say it was lean and name the one thing that
+kept it lean, in relative terms), and the `No skills / workflows invoked this
+session.` line. Do not bail out with
 "nothing to retro," do not invent a shape, and do not go parse an on-disk
 transcript to manufacture token numbers you do not have.
 
@@ -230,17 +243,44 @@ transcript to manufacture token numbers you do not have.
 
 #### Token Utilization  *(headline: lead with this)*
 
-Concrete moments in **this** session where tokens were spent badly. For each:
+Score **this session's share of work**, not a tool-call histogram. You do not
+have API token counts; never emit an uncached / cache-write / cache-read /
+output table.
+
+**Findings (3-5).** One line each. Fig is a short relative number (`most`,
+`~half`, `5×`, `lean`), never a fabricated percent of billed tokens. Kind is
+`bad` (waste), `good` (healthy), or `info` (neutral fact). Look for: a called
+skill eating the session, one user turn dominating (including subagents it
+spawned), prefix-break clustering, subagent fan-out that did not pay.
+
+| Fig | Kind | Finding |
+|-----|------|---------|
+| most | bad | **explore-deep** ran until the next human turn and dominated this session |
+| 5× | bad | five Task agents after the file was already located |
+| lean | good | batched the status sweep in one turn |
+
+The table is a format guide: replace every cell with this session's real
+observations. A lean session still emits 1-3 findings; name the one thing that
+kept it lean. Do not pad with invented waste.
+
+**Moments.** Concrete places tokens were spent badly. For each:
 
 - **Moment**: what happened + where (`the three sequential greps before the first edit`).
 - **Rule**: the `tool-economy.md` rule it broke (Query-the-graph-first,
   Budgeted-docs, Locate-before-Read, Batch-your-Bash,
-  Read-state-don't-re-derive).
+  Read-state-don't-re-derive, Attribute-to-skill, Keep-the-prefix,
+  Budget-subagents, One-prompt-share).
 - **Next-turn fix**: the specific different action.
 - **Magnitude**: relative (`~2k-line read → ~200 with offset+limit`), never a
   fabricated token count.
 
-If the session was already lean, say so and name the one thing that kept it lean.
+If there were no waste moments, say the session was lean and skip the list.
+
+**Recommendations (1-4).** Each ties to a finding and names the cheaper next
+action (`explore-deep` spawned 5 agents for most of this session: add a
+locate-first gate). These also feed Wiring. Under `--focus tokens` still emit
+them here; do **not** emit the Wiring table or `Called artifact` /
+`Proposed wire-in` headers.
 
 #### What Could Have Been Done Better
 
@@ -371,3 +411,6 @@ Snapshot line and the biggest token win) and omit lines 2-4.
 - Shapes + score key: [references/session-shapes.md](references/session-shapes.md)
 - Token discipline (cite by rule name): [references/tool-economy.md](references/tool-economy.md)
 - New-skill brief contract: [references/skill-candidate-brief.md](references/skill-candidate-brief.md)
+- For a 7-day numeric cache report on Claude Code, use Anthropic's
+  `session-report` skill. Do not run it, copy its analyzer, or read
+  `~/.claude/projects` from this skill.
