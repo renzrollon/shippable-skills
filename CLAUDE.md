@@ -12,11 +12,11 @@ Every skill in `engineering/` or `productivity/` (the **promoted** buckets) must
 
 `.claude-plugin/plugin.json`'s `version` tracks `package.json`'s version: bump both together on release.
 
-Each skill entry in the top-level `README.md` must link the skill name to its `SKILL.md`.
+Each promoted skill must have a human `README.md` beside its `SKILL.md`. That folder URL is the page you share. Catalog entries in the top-level `README.md` and in each bucket `README.md` link the skill name to the skill directory, not to `SKILL.md`.
 
-Each bucket folder has a `README.md` that lists every skill in the bucket with a one-line description, with the skill name linked to its `SKILL.md`. Promoted bucket READMEs and the top-level README group entries into **User-invoked** and **Model-invoked**.
+Promoted bucket READMEs and the top-level README group entries into **User-invoked** and **Model-invoked**.
 
-Skills in `engineering/` and `productivity/` also have a human-facing docs page at `docs/<bucket>/<skill>.md`. When you add, rename, or change the behaviour of a promoted skill, create or re-sync its docs page. Four sections make a page finished: **What it does**, **When to reach for it**, **Common questions**, and **It's working if**. Install commands live only in the top-level `README.md`, never on a docs page.
+Skills in `engineering/` and `productivity/` also have a human-facing docs page at `docs/<bucket>/<skill>.md`. When you add, rename, or change the behaviour of a promoted skill, create or re-sync its docs page. Four sections make a page finished: **What it does**, **When to reach for it**, **Common questions**, and **It's working if**. The full install (npx plus the Claude Code plugin path) lives only in the top-level `README.md`. A skill-folder `README.md` may repeat the one-line `npx skills add` command and link back to the collection README. Docs pages do not host that dual install.
 
 Every `SKILL.md` is either user-invoked (`disable-model-invocation: true` plus `policy.allow_implicit_invocation: false` in `agents/openai.yaml`) or model-invoked (omit both). Keep the two harnesses in sync: a skill is user-invoked in both or neither.
 

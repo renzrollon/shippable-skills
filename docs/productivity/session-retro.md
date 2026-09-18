@@ -1,3 +1,7 @@
+# session-retro
+
+Share this skill as the folder that holds its human README: [`skills/productivity/session-retro/`](../../skills/productivity/session-retro/).
+
 ## What it does
 
 `session-retro` scores the **conversation you are still in**: the session shape
@@ -90,8 +94,8 @@ wrong file is worse than none, because it looks applied and changes nothing.
 
 **Does this work in Cursor / Copilot / Codex, or only Claude Code?**
 It is a standard Agent Skills package (`SKILL.md` plus `references/`). Install
-via `npx skills add renzrollon/shippable-skills` and pick your hosts. The
-Claude Code plugin is an optional second route; do not install both.
+from the [collection README](../../README.md) or the [skill-folder README](../../skills/productivity/session-retro/).
+The Claude Code plugin path lives on the collection README. Do not install both.
 
 **Will the agent fire this in the middle of my work?**
 No. It is user-invoked. You type `/session-retro` (or pick it from the skill
