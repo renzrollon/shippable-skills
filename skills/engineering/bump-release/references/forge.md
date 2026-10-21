@@ -37,12 +37,19 @@ reason, and print the manual command below. The commit, tag, and push stand.
 ## Tag prefix
 
 ```
-git tag --list --sort=-v:refname
+git tag --list --sort=-v:refname '*<current-version>'
 ```
 
-Take the first tag that looks like a version (digits and dots after an optional
-prefix). Its non-numeric lead is the prefix: `v1.4.0` gives `v`, `1.4.0` gives
-none, `release-1.4.0` gives `release-`. With no version tag, use `v`.
+`<current-version>` is the version being replaced. Take the first match whose
+text before the version has no digits (so `v11.4.0` does not count for `1.4.0`).
+Its lead is the prefix: `v1.4.0` gives `v`, `1.4.0` gives none,
+`release-1.4.0` gives `release-`. That tag is also the **previous version tag**
+for the release notes.
+
+If the current version was never tagged, take the lead of the newest version-like
+tag by `git tag --list --sort=-creatordate`, and there is no previous version tag.
+With no version tag at all, use `v`. Do not take the prefix from the first tag of
+a text sort: with `release-0.1.0` and `1.4.0` it picks `release-`.
 
 Check the target tag before creating it:
 
@@ -73,21 +80,25 @@ fetch, rebase or merge, then push the branch and the tag.
 
 ## Release notes
 
-Subjects since the previous version tag:
+Subjects since the previous version tag, written to a temporary file:
 
 ```
-git log <previous-tag>..<tag> --format='- %s'
+notes_file="$(mktemp)"
+git log <previous-tag>..<tag> --format='- %s' > "$notes_file"
 ```
 
 With no previous version tag, use every commit reachable from the new tag. Do
-not add prose of your own.
+not add prose of your own. Commit subjects come from every contributor, so
+never place them inside a shell string: a subject holding `$(...)`, a backtick,
+or a quote would run on the releaser's machine while their forge token is
+active. Pass the file instead, and delete it after the release is created.
 
 ## Create the release
 
 | Forge | Command |
 |-------|---------|
-| GitHub | `gh release create <tag> --title <tag> --notes "<notes>"` |
-| GitLab | `glab release create <tag> --name <tag> --notes "<notes>"` |
+| GitHub | `gh release create <tag> --title <tag> --notes-file "$notes_file"` |
+| GitLab | `glab release create <tag> --name <tag> --notes-file "$notes_file"` |
 
 Print the URL the command returns. For a prerelease version, add `--prerelease`
 on GitHub; GitLab marks it by the tag itself.

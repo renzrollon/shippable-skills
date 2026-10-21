@@ -25,6 +25,7 @@ The block lives in the instruction file: the first existing of `AGENTS.md`, `CLA
 unit: <command> (cwd: <cwd>)
 unit filter: <syntax>
 unit single file: <syntax>
+unit timeout: <ms or none>
 typecheck: <command or none found (<where it looked>)>
 lint: <command or none found (<where it looked>)>
 build: <command or none found (<where it looked>)>
@@ -46,7 +47,7 @@ Rules:
 
 ## JSON cache
 
-Path: `<state-dir>/testing/profile.json`. The state directory is a user-passed `--state-dir`, else a `shippable-state-dir: <path>` line in the instruction file, else `.claude/` when it exists, else `.agents/`.
+Path: `<state-dir>/testing/profile.json`. The state directory is a path the user passed (`--state-dir`) or named in the request, else a `shippable-state-dir: <path>` line in the instruction file (ignored when absolute or containing `..`), else `.claude/` when it exists, else `.agents/`.
 
 The cache mirrors the block and exists so the profile survives a declined or denied block write.
 
@@ -64,7 +65,7 @@ The cache mirrors the block and exists so the profile survives a declined or den
 - Hold only fields the writer looked for. An absent key means "not looked". `null` means "looked and found nothing".
 - Every `null` gets an entry under the top-level `notes` object, keyed by field name, saying where it looked. The block reads `none found (<where it looked>)` for the same field.
 - Preserve unknown keys verbatim on rewrite.
-- Block and cache disagree: the block wins, and the cache is rewritten from it.
+- Block and cache disagree: the block wins, and the cache is rewritten from it. Every block line has a cache key: `unit` to `unit.command` and `unit.cwd`, `unit filter` to `unit.filter`, `unit single file` to `unit.single_file`, `unit timeout` to `unit.timeout_ms` (`none` is `null`), `prerequisites` to `unit.prerequisites`, `known flaky` to `known_flaky`, `discovered-from` to `discovered_from`.
 - Stale entry: the command names a script the manifest no longer defines, or exits 127 or "not found". Rediscover without asking, rewrite both, and say the old command was stale.
 
 ## Discovery ladder

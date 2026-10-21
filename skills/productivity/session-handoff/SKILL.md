@@ -47,7 +47,7 @@ context because the skill was invoked, so write the handoff in this reply.
 | Argument | Meaning |
 |----------|---------|
 | `<slug>` | Short kebab-case name for the work. Default: derived from the branch or the main task. |
-| `--handoff-dir <path>` | Directory to write to (see step 3) |
+| `--handoff-dir <path>` | Directory to write to (see step 4) |
 
 ---
 
@@ -78,31 +78,40 @@ only assumed, work that must not be repeated, and the next concrete steps.
 short SHA. Do not paste their contents. A handoff longer than about 150 lines
 usually copied something it should have pointed at.
 
-### 3. Resolve the directory and write the file
+### 3. Compose and redact
+
+Fill the nine sections from [references/handoff-template.md](references/handoff-template.md).
+
+Then, **before anything is written**, scan what you are about to save for
+secrets: API tokens, keys, passwords, bearer strings, connection strings with
+credentials, private key blocks. Replace each with a placeholder naming its
+kind. The write in step 4 and the inline fallback both use this redacted text,
+so a secret is never on disk, even briefly.
+
+### 4. Resolve the directory and write the file
 
 Restated from the collection's shared conventions:
 
 - **Instruction file:** the first existing of `AGENTS.md`, `CLAUDE.md`,
   `.github/copilot-instructions.md`. A line `shippable-handoff-dir: <path>` in
-  it (relative to the repo root) overrides the handoff directory.
-- **Handoff directory:** a user-passed `--handoff-dir`, else the instruction-file
-  override, else the first existing of `.claude/handoff/`, `.agents/handoff/`,
-  `docs/handoff/`. When none exists, create `.agents/handoff/` and suggest a
-  gitignore line for it.
+  it (relative to the repo root) overrides the handoff directory. Ignore a value
+  that is absolute or contains `..`, and say so.
+- **Handoff directory:** a path the user passed or named in the request, else the
+  instruction-file override, else the first existing of `.claude/handoff/`,
+  `.agents/handoff/`, `docs/handoff/`. When none exists, create `.agents/handoff/`
+  and suggest a gitignore line for it.
 - **File name:** `handoff-<slug>-<YYYYMMDD-HHMMSS>.md`.
 
-Fill the nine sections from [references/handoff-template.md](references/handoff-template.md).
+When the user's path is not one of the three defaults, the next session's
+`session-primer` will not find the file unless the instruction file names the
+directory. Offer the exact line `shippable-handoff-dir: <path>` with the
+constraint proposal in step 5, and write it only on a yes.
+
+Write the redacted text from step 3.
 
 **Attempt the create and the write once.** If the host denies either, do not
-retry, do not try another location, and print the whole handoff in the reply
-instead, after a one-line note that the write was denied.
-
-### 4. Redact
-
-Before the write, scan what you are about to save for secrets: API tokens, keys,
-passwords, bearer strings, connection strings with credentials, private key
-blocks. Replace each with a placeholder naming its kind. This holds for the
-inline fallback too.
+retry, do not try another location, and print the whole redacted handoff in the
+reply instead, after a one-line note that the write was denied.
 
 ### 5. Propose reusable constraints
 

@@ -48,8 +48,8 @@ when you want to score how the session went: that is a retro, not a handoff.
 ## Common questions
 
 **Where does the file go?**
-A `--handoff-dir` you pass, else a `shippable-handoff-dir:` line in your
-instruction file, else the first existing of `.claude/handoff/`,
+A `--handoff-dir` you pass or a directory you name in the request, else a
+`shippable-handoff-dir:` line in your instruction file, else the first existing of `.claude/handoff/`,
 `.agents/handoff/`, `docs/handoff/`, else a new `.agents/handoff/` (it suggests
 a gitignore line). The name is `handoff-<slug>-<YYYYMMDD-HHMMSS>.md`.
 

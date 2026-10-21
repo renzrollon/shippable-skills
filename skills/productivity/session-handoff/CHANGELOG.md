@@ -10,5 +10,6 @@ First release.
 - Redacts secrets, in the file and in the inline fallback.
 - Proposes at most three reusable constraints for your instruction file and
   writes nothing without a yes.
-- Reads the first existing of `.claude/handoff/`, `.agents/handoff/`,
+- Writes to the first existing of `.claude/handoff/`, `.agents/handoff/`,
   `docs/handoff/`, else creates `.agents/handoff/`.
+- Redacts before it writes, so a secret is never on disk.

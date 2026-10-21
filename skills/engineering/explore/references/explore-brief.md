@@ -4,7 +4,7 @@ A durable record of an exploration, written so the next step can reload discover
 
 ## Where and when
 
-Path: `<handoff-dir>/explore-<slug>-<YYYYMMDD-HHMMSS>.md`. The handoff directory is a user-passed `--handoff-dir`, else a `shippable-handoff-dir: <path>` line in the instruction file, else the first existing of `.claude/handoff/`, `.agents/handoff/`, `docs/handoff/`, else create `.agents/handoff/` and advise a gitignore line. Slug is the topic in kebab-case.
+Path: `<handoff-dir>/explore-<slug>-<YYYYMMDD-HHMMSS>.md`. The handoff directory is a path the user passed (`--handoff-dir`) or named in the request, else a `shippable-handoff-dir: <path>` line in the instruction file (ignored when absolute or containing `..`), else the first existing of `.claude/handoff/`, `.agents/handoff/`, `docs/handoff/`, else create `.agents/handoff/` and advise a gitignore line. Slug is the topic in kebab-case.
 
 Required in autonomous mode. Optional in conversational mode when the user asks to save the exploration. Attempt the create and the write once; on denial or error do not retry or guess another location, print the brief in the reply.
 

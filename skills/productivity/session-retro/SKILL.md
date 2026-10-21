@@ -2,7 +2,7 @@
 name: session-retro
 description: Retro the current session. Score it against session shapes, flag token waste with next-turn fixes, and propose wire-ins into the skills this conversation actually called.
 license: MIT
-argument-hint: "[--since <marker>] [--focus tokens|wiring]"
+argument-hint: "[--since <marker>] [--focus tokens|wiring] [--handoff-dir <path>]"
 disable-model-invocation: true
 metadata:
   version: 0.2.0
@@ -120,6 +120,7 @@ read a file to find "real" data.
 | `--since <marker>` | Only the portion after a natural marker (e.g. "since the first edit", "since compact") |
 | `--focus tokens` | Emit the Snapshot plus Token Utilization only (findings, moments, recs). Do **not** emit the Wiring section, its table, or its column headers (`Called artifact`, `Proposed wire-in`). |
 | `--focus wiring` | Emit the Snapshot plus the Wiring section only, and still close with the step-5 `Hand wire-ins` line. |
+| `--handoff-dir <path>` | Directory for the handoffs (see step 4) |
 
 Natural language maps to the flags: "retro this session" (none), "how did this
 session use tokens" (`--focus tokens`), "what should we wire into the skills we
@@ -323,6 +324,7 @@ Resolve the handoff directory (`HAND`) in this order:
 1. A path the user passed (`--handoff-dir <path>`) or named in the request.
 2. A `shippable-handoff-dir: <path>` line in the instruction file (the first
    existing of `AGENTS.md`, `CLAUDE.md`, `.github/copilot-instructions.md`).
+   Ignore a value that is absolute or contains `..`, and say so.
 3. The first existing of `.claude/handoff/`, `.agents/handoff/`,
    `docs/handoff/`.
 4. Otherwise create `.agents/handoff/`, whatever the state directory is, and

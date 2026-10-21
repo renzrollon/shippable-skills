@@ -141,9 +141,9 @@ Restated from the collection's shared conventions:
 
 - **Instruction file:** the first existing of `AGENTS.md`, `CLAUDE.md`,
   `.github/copilot-instructions.md`. A line `shippable-handoff-dir: <path>` in
-  it (relative to the repo root) overrides the handoff directory.
-- **Handoff directory:** a user-passed `--handoff-dir`, else the instruction-file
-  override, else the first existing of `.claude/handoff/`, `.agents/handoff/`,
+  it (relative to the repo root) overrides the handoff directory. Ignore a value that is absolute or contains `..`, and say so.
+- **Handoff directory:** a path the user passed (`--handoff-dir`) or named in the
+  request, else the instruction-file override, else the first existing of `.claude/handoff/`, `.agents/handoff/`,
   `docs/handoff/`. When none exists, create `.agents/handoff/` and suggest a
   gitignore line.
 - **File name:** `explore-<slug>-<YYYYMMDD-HHMMSS>.md`.

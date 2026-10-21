@@ -1,15 +1,14 @@
 # Changelog
 
-## Unreleased
-
-Handoff directory now follows the shared contract: a user path, an instruction
-file override, then the first existing of `.claude/handoff/`, `.agents/handoff/`,
-`docs/handoff/`, else `.agents/handoff/`. The write location changes only in a
-repo whose sole handoff directory is `docs/handoff/` (it now writes there
-instead of creating `.agents/handoff/`), or when a path is passed or configured.
-Mentions of `session-review` now read "a log-scoring tool such as agent-insights".
-
 ## 0.2.0 (unreleased)
+
+Handoff directory now follows the shared contract: a path you pass (`--handoff-
+dir`) or name in the request, an instruction file override, then the first
+existing of `.claude/handoff/`, `.agents/handoff/`, `docs/handoff/`, else
+`.agents/handoff/`. The write location changes only in a repo whose sole handoff
+directory is `docs/handoff/` (it now writes there instead of creating
+`.agents/handoff/`), or when a path is passed or configured. Mentions of
+`session-review` now read "a log-scoring tool such as agent-insights".
 
 Token Utilization now scores the same dimensions Anthropic's `session-report`
 looks for, without reading logs or inventing cache numbers.

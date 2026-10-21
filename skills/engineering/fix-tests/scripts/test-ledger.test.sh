@@ -141,6 +141,83 @@ plain="$work/plain"; mkdir -p "$plain"
 out="$(cd "$plain" && GIT_CEILING_DIRECTORIES="$work" bash "$ledger" HEAD 2>&1)"; rc=$?
 check "outside a repository exits 2" 2 "not inside a git repository" "$rc" "$out"
 
+
+# Case 9: ordinary .skip( and .only( calls outside JS/TS tests are not markers
+d="$(new_repo iterators)"
+(
+  cd "$d"
+  mkdir -p src
+  printf "fn main() {}\n" > src/main.rs
+  printf "class FooTest {\n  void a() {}\n}\n" > FooTest.java
+  git add -A && git_q commit -q -m base
+  printf "fn main() {\n    let a: Vec<String> = std::env::args().skip(1).collect();\n    let mut it = a.iter();\n    it.skip(1);\n}\n" > src/main.rs
+  printf "class FooTest {\n  void a() { list.stream().skip(1).count(); }\n}\n" > FooTest.java
+  out="$(bash "$ledger" HEAD 2>&1)"; rc=$?
+  echo "$rc" > "$d/.rc"; echo "$out" > "$d/.out"
+)
+check "Rust and Java iterator .skip(1) is not a marker" 0 "result: ok" "$(cat "$d/.rc")" "$(cat "$d/.out")"
+
+# Case 10: skip and focus forms beyond the basics
+d="$(new_repo more-markers)"
+(
+  cd "$d"
+  mkdir -p tests
+  printf "test('a', () => {})\nfit('b', () => {})\n" > a.test.js
+  printf "test('a', () => {})\n" > b.test.ts
+  printf "test('a', () => {})\n" > c.test.ts
+  printf "<?php\nclass ATest { function t() {} }\n" > ATest.php
+  printf "import XCTest\nclass FooTests: XCTestCase { func testA() {} }\n" > FooTests.swift
+  printf "defmodule ATest do\n  test \"a\" do\n  end\nend\n" > tests/a_test.exs
+  git add -A && git_q commit -q -m base
+  printf "test('a', () => {})\nfit('b', () => {})\nfit('c', () => {})\n" > a.test.js
+  printf "test.skipIf(true)('a', () => {})\n" > b.test.ts
+  printf "test.fixme('a', () => {})\n" > c.test.ts
+  printf "<?php\nclass ATest { function t() { \$this->markTestSkipped('later'); } }\n" > ATest.php
+  printf "import XCTest\nclass FooTests: XCTestCase { func testA() throws { throw XCTSkip(\"later\") } }\n" > FooTests.swift
+  printf "defmodule ATest do\n  @tag :skip\n  test \"a\" do\n  end\nend\n" > tests/a_test.exs
+  out="$(bash "$ledger" HEAD 2>&1)"; rc=$?
+  echo "$rc" > "$d/.rc"; echo "$out" > "$d/.out"
+)
+check "fit, skipIf, fixme, markTestSkipped, XCTSkip, @tag :skip are flagged" 1 "new skip/only markers (6)" "$(cat "$d/.rc")" "$(cat "$d/.out")"
+
+# Case 11: a quoted path does not leak its hunks into the next file
+d="$(new_repo quoted-path)"
+(
+  cd "$d"
+  mkdir tests
+  printf "it('a', () => {})\n" > 'q"x.test.js'
+  printf "<?php\nclass ATest {}\n" > tests/ATest.php
+  git add -A && git_q commit -q -m base
+  printf "it.only('a', () => {})\n" > 'q"x.test.js'
+  out="$(bash "$ledger" HEAD 2>&1)"; rc=$?
+  echo "$rc" > "$d/.rc"; echo "$out" > "$d/.out"
+)
+check "marker in a quoted path is attributed to that path" 1 'q"x.test.js:1' "$(cat "$d/.rc")" "$(cat "$d/.out")"
+
+# Case 12: a path with a space still matches the test-path rules
+d="$(new_repo spaced-path)"
+(
+  cd "$d"
+  printf "it('a', () => {})\n" > 'my file.test.js'
+  git add -A && git_q commit -q -m base
+  printf "it.skip('a', () => {})\n" > 'my file.test.js'
+  out="$(bash "$ledger" HEAD 2>&1)"; rc=$?
+  echo "$rc" > "$d/.rc"; echo "$out" > "$d/.out"
+)
+check "marker in a path with a space is flagged" 1 "my file.test.js:1" "$(cat "$d/.rc")" "$(cat "$d/.out")"
+
+# Case 13: a commented-out assertion is listed and the result line says it needs a ledger line
+d="$(new_repo commented-out)"
+(
+  cd "$d"
+  printf "it('adds', () => {\n  expect(1).toBe(1)\n})\n" > a.test.js
+  git add -A && git_q commit -q -m base
+  printf "it('adds', () => {\n  // expect(1).toBe(1)\n})\n" > a.test.js
+  out="$(bash "$ledger" HEAD 2>&1)"; rc=$?
+  echo "$rc" > "$d/.rc"; echo "$out" > "$d/.out"
+)
+check "commented-out assertion needs a ledger line" 0 "need a ledger line or a revert" "$(cat "$d/.rc")" "$(cat "$d/.out")"
+
 echo
 echo "passed $pass, failed $fail"
 [ "$fail" -eq 0 ]

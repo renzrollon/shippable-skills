@@ -20,11 +20,11 @@ Editing a test file is allowed only when the test asserts the wrong contract (ve
 - a stated reason, and
 - one ledger line per file in the report: file, reason, cluster verdict.
 
-When bash is available, run `scripts/test-ledger.sh <snapshot>` before the final report. It prints removed assertions, added skip or only markers, and the net test-line delta against the run snapshot, and exits non-zero on a new marker. Markers that predate the snapshot are not the run's and are not reported.
+When bash is available, run `scripts/test-ledger.sh <snapshot>` before the final report. It prints removed assertions, added skip or only markers, and the net test-line delta against the run snapshot, and exits non-zero on a new marker. Markers that predate the snapshot are not the run's and are not reported. Each removed assertion it lists needs a ledger line or a restore, because exit 0 does not clear it. It cannot see untracked files: copy those aside before editing and diff them by hand.
 
 ## No-regression assert
 
-After the final full run: total is at least the baseline total, and skipped is at most the baseline skipped. When either fails, stop, print which count moved and by how much, revert only edits made since the run snapshot, and refuse to call the suite green. An explained drop (a ledger line says why) is reported, not reverted.
+After the final full run: total is at least the baseline total, and skipped is at most the baseline skipped. When either fails, stop, print which count moved and by how much, revert only edits made since the run snapshot, and refuse to call the suite green. A lower total always reverts: no ledger line excuses a deleted test. A duplicate or obsolete test is reported under `Test quality notes`, not removed.
 
 ## Verdict taxonomy
 

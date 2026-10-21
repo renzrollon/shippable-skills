@@ -84,7 +84,8 @@ may also name the first unchecked line of the newest one.
 
 **Handoff.** Handoffs are `handoff-*.md` files. Scan **every** handoff directory
 that exists: `.claude/handoff/`, `.agents/handoff/`, `docs/handoff/`, plus a
-directory named by `shippable-handoff-dir: <path>` in the instruction file. Pick
+directory named by `shippable-handoff-dir: <path>` in the instruction file
+(ignored when absolute or containing `..`). Pick
 the newest across all of them **by the `YYYYMMDD-HHMMSS` timestamp in the
 filename**, not by file mtime. Ignore other kinds (`explore-*`, `wire-in-*`,
 `skill-candidate-*`).
@@ -92,8 +93,9 @@ filename**, not by file mtime. Ignore other kinds (`explore-*`, `wire-in-*`,
 ### 2. Read the handoff, if it is fresh
 
 If the newest handoff is **less than seven days old** (by its filename
-timestamp against today), read its first line (the resume stamp) and its
-**Next Steps** section only. Its consume rule:
+timestamp against today), read its first line (the resume stamp) and these
+four sections only: **Next Steps**, **Decisions Made**, **Do Not Redo**, and
+**Verified vs Assumed**. Its consume rule:
 
 - **Reads:** the newest `handoff-*.md` across every handoff directory.
 - **Picks the newest by:** the timestamp in the filename.
@@ -113,10 +115,10 @@ Print the block. The format of each line and how to infer the next step are in
 ```
 ## Session Briefing
 Branch: <name> (<N> ahead, <M> behind <default>)
-Last activity: <latest commit subject>, <when>
-Uncommitted: <count> files (<staged>/<unstaged>)
-Open items: <count> unchecked in <N> plan docs (<newest file>)
-Resume from: <handoff file and stamp | fresh start>
+Last activity: <latest commit subject>, <relative time>
+Uncommitted: <count> files (<staged> staged, <unstaged> unstaged)
+Open items: <count> unchecked in <N> plan docs (newest: <path>)
+Resume from: <path> (<stamp>) | fresh start
 Next step: <one line>
 ```
 
@@ -128,7 +130,7 @@ activity, and Uncommitted, and reads `Resume from: fresh start`.
 ## Economy
 
 - One sweep. Do not re-run a command whose answer you already hold.
-- Read a handoff's stamp and Next Steps, never its whole body.
+- Read a handoff's stamp and the four sections in step 2, never its whole body.
 - The briefing is for orientation; leave the deep read to the task that follows.
 
 ---

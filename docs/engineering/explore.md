@@ -58,8 +58,8 @@ It runs the same planned scopes itself, one after another, and prints
 `investigation: sequential`. It does not silently skip a scope.
 
 **Where does the brief go?**
-A `--handoff-dir` you pass, else a `shippable-handoff-dir:` line in your
-instruction file, else the first existing of `.claude/handoff/`,
+A `--handoff-dir` you pass or a directory you name in the request, else a
+`shippable-handoff-dir:` line in your instruction file, else the first existing of `.claude/handoff/`,
 `.agents/handoff/`, `docs/handoff/`, else a new `.agents/handoff/`. One create
 attempt; a denied write prints the brief in the reply.
 

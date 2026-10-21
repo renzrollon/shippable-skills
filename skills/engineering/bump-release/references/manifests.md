@@ -48,8 +48,8 @@ After the table, run one sweep for anything it missed, excluding dependency
 directories (`node_modules`, `vendor`, `.git`, `target`, `dist`, `build`):
 
 ```
-grep -rn '"version"[[:space:]]*:[[:space:]]*"[0-9]' --include='*.json' .
-grep -rn '__version__[[:space:]]*=' --include='*.py' .
+grep -rn '"version"[[:space:]]*:[[:space:]]*"[0-9]' --include='*.json' --exclude='package-lock.json' --exclude-dir=node_modules --exclude-dir=vendor --exclude-dir=.git --exclude-dir=target --exclude-dir=dist --exclude-dir=build .
+grep -rn '__version__[[:space:]]*=' --include='*.py' --exclude-dir=node_modules --exclude-dir=vendor --exclude-dir=.git --exclude-dir=target --exclude-dir=dist --exclude-dir=build .
 ```
 
 Every hit not already in the table is a candidate. Show it and let the user

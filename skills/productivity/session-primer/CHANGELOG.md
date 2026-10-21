@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.1.0 (unreleased)
 
 First version. Reads git state, plan docs with unchecked boxes (five newest),
 the newest handoff across `.claude/handoff/`, `.agents/handoff/`, and

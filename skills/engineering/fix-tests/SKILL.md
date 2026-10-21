@@ -62,8 +62,9 @@ Restated from the collection's shared conventions. Use these rules as written.
 
 - **Instruction file:** the first existing of `AGENTS.md`, `CLAUDE.md`,
   `.github/copilot-instructions.md`. A line `shippable-state-dir: <path>` in it
-  overrides the state directory.
-- **State directory:** a user-passed `--state-dir`, else the instruction-file
+  overrides the state directory. Ignore a value that is absolute or contains `..`, and say so.
+- **State directory:** a path the user passed (`--state-dir`) or named in the
+  request, else the instruction-file
   override, else `.claude/` when it exists, else `.agents/`.
 - **Managed block:** `<!-- BEGIN shippable:checks -->` to
   `<!-- END shippable:checks -->` in the instruction file. It is authoritative:
@@ -126,11 +127,23 @@ are never reported or reverted as yours. If the directory is not a git
 repository, say the ledger and revert are unavailable and continue without
 them.
 
+**Untracked files are outside the snapshot.** Neither `git stash create` nor the
+ledger script sees them. Record `git ls-files --others --exclude-standard`. Before
+editing a file on that list, copy it to the system temp directory. The revert
+restores it from that copy, and the ledger for it is manual: run
+`diff -u <copy> <file>` and write a ledger line for every removed assertion or
+added skip marker.
+
 ### 2. Baseline run
 
 Unless `--from-log` supplies the evidence, run the full unit command from the
 profile (respect its working directory and timeout). Record before editing:
 `total`, `passed`, `failed`, `skipped`, `duration`.
+
+A `--from-log` that does not carry a full `total` and `skipped` (a partial run,
+a single file, a cropped paste) cannot anchor the step 6 assert. Run the full
+unit command once for the baseline anyway, before any edit, and use the log only
+as the first clustering evidence.
 
 If the suite is green, report the counts and make no edit.
 
@@ -203,8 +216,9 @@ Run the full unit command again. Then assert both:
 If either fails: **stop**, print which count moved and by how much, revert only
 the edits made since the snapshot (restore each file you changed to its snapshot
 content, leaving earlier uncommitted edits alone), and do not call the suite
-green. An explained drop (a ledger line says a test was removed and why) is
-reported, not reverted.
+green. A lower total always reverts: deleting a test is a forbidden move, and
+no ledger line excuses it. A test that looks duplicate or obsolete goes under
+`Test quality notes`, never into the diff.
 
 ### 7. Test ledger
 
@@ -217,8 +231,11 @@ bash <skill-dir>/scripts/test-ledger.sh <snapshot>
 
 It lists removed assertions, added skip or only markers, and the net test-line
 delta, and exits non-zero on a new marker. A non-zero exit means a forbidden
-move got in: undo it, or report `reverted`. The script only sees changes after
-the snapshot, so a marker that predates the run is never flagged.
+move got in: undo it, or report `reverted`. Exit 0 does not clear a listed
+removed assertion: each one needs a ledger line (file, reason, verdict
+`test-bug`) or is restored. A commented-out assertion lists here and exits 0.
+The script only sees changes after the snapshot, so a marker that predates the
+run is never flagged. It cannot see untracked files (step 1).
 
 ### 8. Report
 

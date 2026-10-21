@@ -76,7 +76,8 @@ the `origin` remote.
 
 - `## Release preview` listed every manifest you would have named, plus any you
   forgot, before anything changed.
-- After the run, no manifest in the repo carries the old version.
+- After the run, no manifest in the repo carries the old version, except
+  candidates you chose to skip.
 - The commit is `chore: bump version to <version>`, stages files by name, and
   the tag points at it.
 - `## Release report` has one line per step, and a skipped step says why.

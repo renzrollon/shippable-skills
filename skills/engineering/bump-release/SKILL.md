@@ -37,11 +37,15 @@ context because the skill was invoked, so run the steps in this reply.
 Automation greps for fixed headings, so keep these exact:
 
 1. Before any write, print `## Release preview` with the old version, the new
-   version, the tag, and one line per file to edit (`path  old -> new`). Then
-   ask for confirmation. Nothing is edited, committed, tagged, or pushed before
-   a yes.
+   version, the tag, the push target (`push: <remote> <branch>`, or `push:
+   skipped (<reason>)`), the public release (`release: <forge> <tag>`, or
+   `release: skipped (<reason>)`), and one line per file to edit
+   (`path  old -> new`). Then ask for confirmation. The one yes covers the edit,
+   commit, tag, push, and release, so the preview must name all of them. Nothing
+   is edited, committed, tagged, or pushed before a yes.
 2. End every run, including a stopped run, with `## Release report` listing:
-   old and new version, each file edited, the commit, the tag, the push result,
+   old and new version (the new version reads `not resolved` when the run
+   stopped before step 3), each file edited, the commit, the tag, the push result,
    and the release URL or the reason the release was skipped. A stopped run
    says which step stopped it and states that no file was edited (or which were,
    if the stop came after edits).
