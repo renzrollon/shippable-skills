@@ -11,11 +11,16 @@ node_modules/
 *.log
 
 # Agent runtime (never commit generated session state)
-.agents/handoff/
+.agents/
 .claude/handoff/
 .claude/settings.local.json
 .claude/graph/
+.claude/skills/
+.claude/worktrees/
 
 # Backups
 *.bak
 *.bak.*
+
+# CC BY-NC-SA reference copy (positioning only; must not ship in this MIT repo)
+Product-Manager-Skills-main/

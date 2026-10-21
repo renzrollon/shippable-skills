@@ -1,0 +1,35 @@
+schema_version: v1alpha1
+
+# product-spine is user-invoked (disable-model-invocation: true). Prompts must
+# start with /product-spine so Claude Code expands the skill; bare natural
+# language will not load it. Cases plant product artefacts (or a README only);
+# the reply (and collected files) must honour threads mermaid, Status: draft,
+# the review block, and the capability block.
+
+environment:
+  type: none
+
+skills:
+  - source: local_path
+    path: .
+
+engine:
+  name: claude_code
+
+cases:
+  files:
+    - evals/cases/threads-default-map.yaml
+    - evals/cases/threads-no-spine-files.yaml
+    - evals/cases/draft-brief-stays-draft.yaml
+    - evals/cases/review-brief-verdict.yaml
+    - evals/cases/capability-no-primer.yaml
+    - evals/cases/capability-from-gaps.yaml
+    - evals/cases/refuse-code.yaml
+  defaults:
+    timeout_seconds: 180
+    max_turns: 10
+    collect_artifacts:
+      - "docs/product/**"
+
+report:
+  formats: [json]

@@ -2,7 +2,7 @@
   "name": "shippable-skills",
   "displayName": "Shippable Skills",
   "version": "0.1.0",
-  "description": "Shippable agent skills for real sessions: retro the conversation you are still in, flag token waste, and wire the lesson back into the skills you called.",
+  "description": "Shippable agent skills for real sessions: retro the conversation you are still in, and a repo-native product spine that helps an engineer act as product owner (threads, one-pager, epics, briefs).",
   "author": {
     "name": "Carl Rollon",
     "url": "https://github.com/renzrollon"
@@ -13,10 +13,13 @@
   "keywords": [
     "skills",
     "session-retro",
+    "product-spine",
+    "product-management",
     "productivity",
     "token-economy"
   ],
   "skills": [
-    "./skills/productivity/session-retro"
+    "./skills/productivity/session-retro",
+    "./skills/productivity/product-spine"
   ]
 }

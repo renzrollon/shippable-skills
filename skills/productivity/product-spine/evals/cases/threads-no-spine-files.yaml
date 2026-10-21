@@ -1,0 +1,39 @@
+id: threads-no-spine-files
+title: Threads with no product tree still emit a map
+description: |
+  No one-pager, epics, primer, or briefs. Only a short README. Threads mode
+  must still emit mermaid and at least one Feature / Improvement / Fix card,
+  marked thin as needed. It must not answer Yes today from guesswork.
+
+context:
+  files:
+    "README.md": |
+      # Inbox
+
+      Users cannot snooze a message. They delete it and hope it comes back.
+
+input:
+  prompt: |
+    /product-spine
+
+expect:
+  must_contain:
+    - "mermaid"
+  must_not_contain:
+    - "Yes today"
+
+judge:
+  type: rule_based
+  failure:
+    - output_contains:
+        any:
+          - "Yes today"
+  success:
+    - output_contains:
+        all:
+          - "mermaid"
+    - output_contains:
+        any:
+          - "Feature"
+          - "Improvement"
+          - "Fix"

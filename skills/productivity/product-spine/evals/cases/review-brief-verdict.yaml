@@ -1,0 +1,72 @@
+id: review-brief-verdict
+title: Review of a thin brief says not ready to propose
+description: |
+  Planted brief has empty product constraints. Review is read-only and must
+  emit the contract headings plus Ready to propose: no.
+
+context:
+  files:
+    "docs/product/one-pager/current.md": |
+      # One-pager: payments
+
+      ## 4. Roadmap initiatives
+
+      ### Recover failed payments
+
+      - Serves bet: recovery.
+    "docs/product/epics/2026-08-15-payment-recovery.md": |
+      # Payment recovery
+
+      Status: draft
+      Ladders to: docs/product/one-pager/current.md §4 Recover failed payments
+    "docs/product/briefs/2026-09-01-x.md": |
+      # Incomplete retry brief
+
+      Status: draft
+      Part of: docs/product/epics/2026-08-15-payment-recovery.md
+      Suggested change: retry-failed-payment
+
+      ## 1. User need
+
+      - Who: a payer
+      - Friction: failed charge
+      - Outcome: retry
+
+      ## 2. Platform pieces
+
+      primer absent
+
+      ## 3. Product constraints
+
+      ## 4. Reasons for product decision
+
+      none
+
+input:
+  prompt: |
+    /product-spine review docs/product/briefs/2026-09-01-x.md
+
+expect:
+  must_contain:
+    - "Strong"
+    - "Missing"
+    - "Ladder"
+    - "Next step"
+    - "Ready to propose: no"
+  must_not_contain:
+    - "Ready to propose: yes"
+
+judge:
+  type: rule_based
+  failure:
+    - output_contains:
+        any:
+          - "Ready to propose: yes"
+  success:
+    - output_contains:
+        all:
+          - "Strong"
+          - "Missing"
+          - "Ladder"
+          - "Next step"
+          - "Ready to propose: no"

@@ -1,0 +1,74 @@
+id: threads-default-map
+title: Default invocation emits a mermaid thread map
+description: |
+  Bare /product-spine is threads mode. Plant a one-pager, an epic, README
+  friction, and a TODO in source. The reply must be a mermaid map plus at
+  least one Feature / Improvement / Fix card. It must not flip Status to
+  ready or implement the TODO.
+
+context:
+  files:
+    "docs/product/one-pager/current.md": |
+      # One-pager: payments
+
+      ## 1. Change log
+
+      - 2026-08-01: first draft.
+
+      ## 3. Strategy bets
+
+      - Recover failed payments without a new case.
+
+      ## 4. Roadmap initiatives
+
+      ### Recover failed payments
+
+      - Serves bet: Recover failed payments without a new case.
+    "docs/product/epics/2026-08-15-payment-recovery.md": |
+      # Payment recovery
+
+      Status: draft
+      Ladders to: docs/product/one-pager/current.md §4 Recover failed payments
+
+      ## 1. User problem
+
+      A payer whose charge failed has to start over.
+    "README.md": |
+      # Payments
+
+      Payers whose card charge failed cannot retry without re-uploading
+      documents already on file.
+    "src/payments.ts": |
+      // TODO: allow retry of a failed charge without a new upload
+      export function createPayment() {
+        return { status: "created" };
+      }
+
+input:
+  prompt: |
+    /product-spine
+
+expect:
+  must_contain:
+    - "mermaid"
+    - "Thread map"
+  must_not_contain:
+    - "Status: ready"
+    - "export function"
+
+judge:
+  type: rule_based
+  failure:
+    - output_contains:
+        any:
+          - "Status: ready"
+          - "export function"
+  success:
+    - output_contains:
+        all:
+          - "mermaid"
+    - output_contains:
+        any:
+          - "Feature"
+          - "Improvement"
+          - "Fix"

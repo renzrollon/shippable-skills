@@ -2,7 +2,7 @@
   "name": "shippable-skills",
   "version": "0.1.0",
   "private": true,
-  "description": "Shippable agent skills: session retro and more, installable on Cursor, Copilot, Codex, Claude Code, and other Agent Skills hosts.",
+  "description": "Shippable agent skills: session retro and product spine, installable on Cursor, Copilot, Codex, Claude Code, and other Agent Skills hosts.",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -17,6 +17,7 @@
     "agent-skills",
     "skills",
     "session-retro",
+    "product-spine",
     "cursor",
     "copilot",
     "codex",

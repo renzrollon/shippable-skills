@@ -1,0 +1,70 @@
+id: draft-brief-stays-draft
+title: Draft brief is saved Status draft with a ladder line
+description: |
+  Inline user need, epic, and constraints. The skill must write a brief file
+  (and echo the contract lines in chat) as Status: draft with Part of: or
+  Ladders to:. It must not flip the file to ready or ready-to-propose.
+
+context:
+  files:
+    "docs/product/one-pager/current.md": |
+      # One-pager: payments
+
+      ## 1. Change log
+
+      - 2026-08-01: first draft.
+
+      ## 3. Strategy bets
+
+      - Recover failed payments without a new case.
+
+      ## 4. Roadmap initiatives
+
+      ### Recover failed payments
+
+      - Serves bet: Recover failed payments without a new case.
+    "docs/product/epics/2026-08-15-payment-recovery.md": |
+      # Payment recovery
+
+      Status: draft
+      Ladders to: docs/product/one-pager/current.md §4 Recover failed payments
+
+      ## 1. User problem
+
+      A payer whose charge failed has to start over.
+
+      ## 3. Out of scope
+
+      - New payment methods
+
+input:
+  prompt: |
+    /product-spine draft brief User need: a payer whose card charge failed
+    cannot retry without re-uploading documents; they should retry the same
+    payment. This is part of the epic at
+    docs/product/epics/2026-08-15-payment-recovery.md. Constraints: In: retry
+    the stored payment and reuse documents already on file; Out: new payment
+    methods.
+
+expect:
+  must_contain:
+    - "Status: draft"
+  must_not_contain:
+    - "Status: ready"
+    - "Status: ready-to-propose"
+
+judge:
+  type: rule_based
+  failure:
+    - output_contains:
+        any:
+          - "Status: ready"
+          - "Status: ready-to-propose"
+  success:
+    - output_contains:
+        all:
+          - "Status: draft"
+    - output_contains:
+        any:
+          - "Part of:"
+          - "Ladders to:"

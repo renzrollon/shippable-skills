@@ -1,0 +1,49 @@
+id: capability-from-gaps
+title: Capability with primer and gaps answers No today
+description: |
+  Primer has payments without retry. Gaps file names the nearest alternative.
+  Answer is No today, and the nearest alternative is reported, not invented
+  as a current capability.
+
+context:
+  files:
+    "docs/product/context/platform-primer.md": |
+      # Platform primer
+
+      ## Payments
+
+      Users can create a payment and upload supporting documents once.
+      A failed charge is a terminal state on that payment.
+
+      ## Notifications
+
+      Email on payment success or failure.
+    "docs/product/context/capability-gaps.md": |
+      # Capability gaps
+
+      - Payment retry without re-upload: not available. Nearest alternative
+        that works today: create a new payment and reuse documents already
+        on the case.
+
+input:
+  prompt: |
+    /product-spine capability "can users retry a payment without re-uploading documents?"
+
+expect:
+  must_contain:
+    - "No today"
+    - "Nearest alternative"
+  must_not_contain:
+    - "Yes today"
+
+judge:
+  type: rule_based
+  failure:
+    - output_contains:
+        any:
+          - "Yes today"
+  success:
+    - output_contains:
+        all:
+          - "No today"
+          - "Nearest alternative"
