@@ -1,0 +1,40 @@
+id: autonomous-brief
+title: Autonomous run asks nothing and writes a brief
+description: |
+  With --autonomous the run must not ask the user questions, and should name
+  the brief it wrote or print it. The investigation marker is still required.
+
+context:
+  files:
+    "src/auth.js": |
+      exports.login = (u, p) => u === 'admin' && p === 'x';
+    "src/session.js": |
+      exports.start = (user) => ({ user, at: Date.now() });
+
+input:
+  prompt: |
+    explore --autonomous how login and sessions work here and what to watch for
+    if we add SSO. Do not ask me anything.
+
+expect:
+  must_not_contain:
+    - "Which would you prefer"
+
+judge:
+  type: rule_based
+  failure:
+    - output_contains:
+        any:
+          - "Which would you prefer"
+          - "Which do you want"
+  success:
+    - output_contains:
+        any:
+          - "investigation: fan-out"
+          - "investigation: sequential"
+          - "investigation: single"
+    - output_contains:
+        any:
+          - "explore-"
+          - "Pending Clarifications"
+          - "handoff"

@@ -1,0 +1,20 @@
+id: brief-format
+title: Briefing labels all present
+description: |
+  The block carries every labelled line.
+
+input:
+  prompt: |
+    brief me on the state of this repo
+
+judge:
+  type: rule_based
+  success:
+    - output_contains:
+        all:
+          - "Branch:"
+          - "Last activity:"
+          - "Uncommitted:"
+          - "Open items:"
+          - "Resume from:"
+          - "Next step:"

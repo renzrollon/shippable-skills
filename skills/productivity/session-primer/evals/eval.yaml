@@ -1,0 +1,28 @@
+schema_version: v1alpha1
+
+# session-primer is model-invoked. Prompts are natural language that should
+# trigger it; the non-trigger case names a specific file and must not.
+
+environment:
+  type: none
+
+skills:
+  - source: local_path
+    path: .
+
+engine:
+  name: claude_code
+
+cases:
+  files:
+    - evals/cases/where-was-i.yaml
+    - evals/cases/catch-me-up.yaml
+    - evals/cases/brief-format.yaml
+    - evals/cases/read-only.yaml
+    - evals/cases/skip-named-file.yaml
+  defaults:
+    timeout_seconds: 180
+    max_turns: 12
+
+report:
+  formats: [json]

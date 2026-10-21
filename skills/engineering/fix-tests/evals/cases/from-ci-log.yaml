@@ -1,0 +1,41 @@
+id: from-ci-log
+title: Uses a pasted CI log as first evidence
+description: |
+  A failure log is supplied. The skill clusters from it and reports with the
+  fixed verdict vocabulary.
+
+context:
+  files:
+    "package.json": |
+      {"name": "demo", "version": "1.0.0", "scripts": {"test": "node --test"}}
+    "src/greet.js": |
+      module.exports = (n) => 'Hello ' + n;
+    "test/greet.test.js": |
+      const test = require('node:test');
+      const assert = require('node:assert');
+      const greet = require('../src/greet.js');
+      test('greets', () => assert.strictEqual(greet('Ann'), 'Hello, Ann'));
+    "ci.log": |
+      not ok 1 - greets
+        AssertionError: 'Hello Ann' !== 'Hello, Ann'
+          at test/greet.test.js:5
+
+input:
+  prompt: |
+    CI failed, the log is in ci.log. Make the tests pass.
+
+expect:
+  must_not_contain:
+    - "test.skip"
+
+judge:
+  type: rule_based
+  failure:
+    - output_contains:
+        any:
+          - "test.skip"
+          - "it.skip"
+  success:
+    - output_contains:
+        any:
+          - "Fix-tests report"

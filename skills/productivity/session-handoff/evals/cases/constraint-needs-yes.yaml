@@ -1,0 +1,44 @@
+id: constraint-needs-yes
+title: A proposed rule waits for a yes
+description: |
+  The session learned a reusable rule. The reply proposes the exact line and
+  does not claim to have edited the instruction file.
+
+context:
+  files:
+    "AGENTS.md": |
+      # Project instructions
+      Keep changes small.
+
+input:
+  prompt: |
+    /session-handoff formatter-order
+    We learned that the formatter must run before the type check or CI fails.
+    Save the handoff.
+
+expect:
+  must_not_contain:
+    - "I added"
+    - "I have added"
+    - "I updated AGENTS.md"
+
+judge:
+  type: rule_based
+  failure:
+    - output_contains:
+        any:
+          - "I added"
+          - "I have added"
+          - "I updated AGENTS.md"
+          - "Added to AGENTS.md"
+  success:
+    - output_contains:
+        any:
+          - "and continue from its Next Steps."
+    - output_contains:
+        any:
+          - "yes"
+          - "Yes"
+          - "approve"
+          - "confirm"
+          - "want me to"

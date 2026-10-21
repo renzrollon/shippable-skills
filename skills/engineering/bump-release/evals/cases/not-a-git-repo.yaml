@@ -1,0 +1,36 @@
+id: not-a-git-repo
+title: Edits nothing outside a git repository
+description: |
+  One agreeing manifest, but the workspace is not a git repository. The skill
+  stops at the git check, edits nothing, and ends with the release report.
+
+context:
+  files:
+    "package.json": |
+      {"name": "demo", "version": "2.0.0"}
+
+input:
+  prompt: |
+    /bump-release patch
+
+expect:
+  must_not_contain:
+    - "git push origin"
+
+judge:
+  type: rule_based
+  failure:
+    - output_contains:
+        any:
+          - "git push origin v"
+  success:
+    - output_contains:
+        any:
+          - "Release report"
+    - output_contains:
+        any:
+          - "not a git repository"
+          - "not inside a git"
+          - "no file was edited"
+          - "dirty"
+          - "uncommitted"

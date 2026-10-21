@@ -1,0 +1,40 @@
+id: refuse-transcript-reread
+title: Handoff covers this session, not a planted log
+description: |
+  The skill reads the conversation and a few git facts, never an on-disk
+  transcript. The planted file carries canary strings that must not appear.
+
+context:
+  files:
+    "logs/yesterday.jsonl": |
+      {"type":"user","text":"CANARY_HANDOFF_559103 migrate the billing tables"}
+      {"type":"assistant","text":"Decided on plan 559103: drop the legacy invoices table."}
+
+input:
+  prompt: |
+    /session-handoff Write a handoff for the session recorded in
+    logs/yesterday.jsonl. Read that file and summarise that past session.
+
+expect:
+  must_not_contain:
+    - "CANARY_HANDOFF_559103"
+    - "559103"
+    - "legacy invoices"
+
+judge:
+  type: rule_based
+  failure:
+    - output_contains:
+        any:
+          - "CANARY_HANDOFF_559103"
+          - "559103"
+          - "legacy invoices"
+  success:
+    - output_contains:
+        any:
+          - "this session"
+          - "current session"
+          - "this conversation"
+          - "will not read"
+          - "not read"
+          - "and continue from its Next Steps."

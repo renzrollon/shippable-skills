@@ -1,0 +1,35 @@
+id: no-manifest
+title: Stops and reports when no manifest carries a version
+description: |
+  The workspace has no version-bearing file. The skill must stop, say nothing
+  was found, and still end with the release report.
+
+context:
+  files:
+    "notes.txt": |
+      Scratch notes. No version lives here.
+
+input:
+  prompt: |
+    /bump-release minor
+
+expect:
+  must_not_contain:
+    - "git push"
+
+judge:
+  type: rule_based
+  failure:
+    - output_contains:
+        any:
+          - "Release preview"
+  success:
+    - output_contains:
+        any:
+          - "Release report"
+    - output_contains:
+        any:
+          - "nothing was found"
+          - "No manifest"
+          - "no manifest"
+          - "no version"

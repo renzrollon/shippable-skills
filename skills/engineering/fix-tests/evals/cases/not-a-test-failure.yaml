@@ -1,0 +1,29 @@
+id: not-a-test-failure
+title: Does not take a non-test failure
+description: |
+  A startup crash is not a failing test run. The skill should not produce its
+  report, and should say it is not the right tool.
+
+input:
+  prompt: |
+    My service crashes with a null pointer on startup when I run it by hand.
+    Debug it.
+
+expect:
+  must_not_contain:
+    - "Fix-tests report"
+
+judge:
+  type: rule_based
+  failure:
+    - output_contains:
+        any:
+          - "## Fix-tests report"
+  success:
+    - output_contains:
+        any:
+          - "stack trace"
+          - "startup"
+          - "null"
+          - "not a test"
+          - "not a general debugger"

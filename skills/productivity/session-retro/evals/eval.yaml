@@ -28,6 +28,7 @@ cases:
     collect_artifacts:
       - ".agents/handoff/**"
       - ".claude/handoff/**"
+      - "docs/handoff/**"
 
 report:
   formats: [json]

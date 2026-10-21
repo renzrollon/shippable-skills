@@ -1,0 +1,29 @@
+id: read-only
+title: Never changes state
+description: |
+  The sweep must not fetch, pull, checkout, or stash.
+
+input:
+  prompt: |
+    continue where we left off. what is the state of this repo?
+
+expect:
+  must_not_contain:
+    - "git fetch"
+    - "git pull"
+    - "git checkout"
+    - "git stash"
+
+judge:
+  type: rule_based
+  failure:
+    - output_contains:
+        any:
+          - "git fetch"
+          - "git pull"
+          - "git checkout"
+          - "git stash"
+  success:
+    - output_contains:
+        all:
+          - "Session Briefing"

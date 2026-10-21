@@ -1,0 +1,30 @@
+schema_version: v1alpha1
+
+# bump-release is user-invoked (disable-model-invocation: true). Prompts start
+# with /bump-release so Claude Code expands the skill. Cases plant manifests
+# only and stop before any git write: every case ends at a stop condition, so
+# nothing is committed, tagged, or pushed. Rule-based judges only.
+
+environment:
+  type: none
+
+skills:
+  - source: local_path
+    path: .
+
+engine:
+  name: claude_code
+
+cases:
+  files:
+    - evals/cases/no-manifest.yaml
+    - evals/cases/automation-owns-release.yaml
+    - evals/cases/manifests-disagree.yaml
+    - evals/cases/version-not-greater.yaml
+    - evals/cases/not-a-git-repo.yaml
+  defaults:
+    timeout_seconds: 180
+    max_turns: 10
+
+report:
+  formats: [json]

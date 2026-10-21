@@ -1,0 +1,5 @@
+interface:
+  display_name: "Session handoff"
+  short_description: "Save where this session stands so the next one resumes without re-deriving it"
+policy:
+  allow_implicit_invocation: false

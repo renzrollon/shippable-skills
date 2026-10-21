@@ -1,0 +1,35 @@
+id: maven-discovery
+title: A pom.xml alone yields mvn test
+description: |
+  Discovery proposes a command rather than interviewing. The Maven ecosystem is
+  untested otherwise, so this case pins it. mvn may be absent, in which case the
+  skill stops with a missing-binary status, still naming the command.
+
+context:
+  files:
+    "pom.xml": |
+      <project>
+        <modelVersion>4.0.0</modelVersion>
+        <groupId>demo</groupId>
+        <artifactId>demo</artifactId>
+        <version>1.0.0</version>
+      </project>
+
+input:
+  prompt: |
+    The tests are failing in this repo. Figure out how they run and fix them.
+
+expect:
+  must_not_contain:
+    - "npm test"
+
+judge:
+  type: rule_based
+  failure:
+    - output_contains:
+        any:
+          - "npm test"
+  success:
+    - output_contains:
+        any:
+          - "mvn test"

@@ -1,0 +1,42 @@
+id: dry-run-diagnoses
+title: Dry run diagnoses without editing source
+description: |
+  --dry-run clusters and proposes fixes but changes no file. The source file
+  keeps its bug, so the reply must not claim the suite is green.
+
+context:
+  files:
+    "package.json": |
+      {"name": "demo", "version": "1.0.0", "scripts": {"test": "node --test"}}
+    "src/sum.js": |
+      module.exports = (a, b) => a - b;
+    "test/sum.test.js": |
+      const test = require('node:test');
+      const assert = require('node:assert');
+      const sum = require('../src/sum.js');
+      test('adds', () => assert.strictEqual(sum(2, 3), 5));
+
+input:
+  prompt: |
+    Run the tests and diagnose the failures, but --dry-run: do not change any
+    file.
+
+expect:
+  must_not_contain:
+    - "status: green"
+
+judge:
+  type: rule_based
+  failure:
+    - output_contains:
+        any:
+          - "status: green"
+  success:
+    - output_contains:
+        any:
+          - "Fix-tests report"
+    - output_contains:
+        any:
+          - "source-bug"
+          - "proposed"
+          - "would"

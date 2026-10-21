@@ -1,0 +1,31 @@
+id: single-file-stays-single
+title: A single-file question does not fan out
+description: |
+  The question names one function in one file. The skill must not spawn
+  investigators, so the fan-out marker must not appear.
+
+context:
+  files:
+    "src/util.js": |
+      exports.parse = (s) => s.split(',').map((x) => x.trim());
+
+input:
+  prompt: |
+    What does parse() in src/util.js do?
+
+expect:
+  must_not_contain:
+    - "investigation: fan-out"
+
+judge:
+  type: rule_based
+  failure:
+    - output_contains:
+        any:
+          - "investigation: fan-out"
+  success:
+    - output_contains:
+        any:
+          - "split"
+          - "comma"
+          - "trim"

@@ -1,0 +1,24 @@
+id: explicit-handoff-dir
+title: A passed --handoff-dir wins
+description: |
+  The reply names a path under the directory the user passed, not the default.
+
+input:
+  prompt: |
+    /session-handoff routing --handoff-dir custom-handoffs
+
+expect:
+  must_not_contain:
+    - ".claude/handoff/handoff-routing"
+
+judge:
+  type: rule_based
+  failure:
+    - output_contains:
+        any:
+          - ".claude/handoff/handoff-routing"
+          - ".agents/handoff/handoff-routing"
+  success:
+    - output_contains:
+        any:
+          - "custom-handoffs/"

@@ -1,0 +1,40 @@
+id: red-suite-fix-source
+title: Red suite triggers the skill and the report appears
+description: |
+  A Node project whose sum() is wrong. The skill should find the test command,
+  fix the source, and end with the report. The test must not gain a skip.
+
+context:
+  files:
+    "package.json": |
+      {"name": "demo", "version": "1.0.0", "scripts": {"test": "node --test"}}
+    "src/sum.js": |
+      module.exports = (a, b) => a - b;
+    "test/sum.test.js": |
+      const test = require('node:test');
+      const assert = require('node:assert');
+      const sum = require('../src/sum.js');
+      test('adds', () => assert.strictEqual(sum(2, 3), 5));
+
+input:
+  prompt: |
+    The suite is red. Make the tests pass.
+
+expect:
+  must_not_contain:
+    - "test.skip"
+
+judge:
+  type: rule_based
+  failure:
+    - output_contains:
+        any:
+          - "test.skip"
+          - "it.skip"
+  success:
+    - output_contains:
+        any:
+          - "Fix-tests report"
+    - output_contains:
+        any:
+          - "source-bug"

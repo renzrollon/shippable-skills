@@ -1,0 +1,37 @@
+id: version-not-greater
+title: Rejects an exact version that is not greater than the current one
+description: |
+  The requested 1.0.0 is below the current 1.2.0. The skill stops before any
+  edit and names both versions.
+
+context:
+  files:
+    "package.json": |
+      {"name": "demo", "version": "1.2.0"}
+
+input:
+  prompt: |
+    /bump-release 1.0.0
+
+expect:
+  must_not_contain:
+    - "Release preview"
+
+judge:
+  type: rule_based
+  failure:
+    - output_contains:
+        any:
+          - "Release preview"
+  success:
+    - output_contains:
+        any:
+          - "1.0.0"
+    - output_contains:
+        any:
+          - "1.2.0"
+    - output_contains:
+        any:
+          - "greater"
+          - "not newer"
+          - "lower"
