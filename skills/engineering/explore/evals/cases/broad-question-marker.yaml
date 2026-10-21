@@ -1,0 +1,42 @@
+id: broad-question-marker
+title: A multi-subsystem question prints an investigation marker
+description: |
+  A request spanning an api and a worker should explore and print one of the
+  three markers. Fan-out or sequential are both acceptable, single is not the
+  expected route but the marker line is what is graded.
+
+context:
+  files:
+    "api/server.js": |
+      const { enqueue } = require('../worker/queue');
+      module.exports = (req) => enqueue({ user: req.user, job: req.body });
+    "worker/queue.js": |
+      exports.enqueue = (j) => { /* persists job then notifies runner */ };
+    "worker/runner.js": |
+      const { enqueue } = require('./queue');
+      module.exports = () => enqueue({ retry: true });
+    "db/schema.sql": |
+      create table jobs (id integer primary key, payload text, status text);
+
+input:
+  prompt: |
+    Explore how a request becomes a finished job end to end across the api, the
+    queue, the runner, and the database. I want to understand it before
+    changing anything.
+
+expect:
+  must_not_contain:
+    - "I have edited"
+
+judge:
+  type: rule_based
+  failure:
+    - output_contains:
+        any:
+          - "I have edited"
+  success:
+    - output_contains:
+        any:
+          - "investigation: fan-out"
+          - "investigation: sequential"
+          - "investigation: single"

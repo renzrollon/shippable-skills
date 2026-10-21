@@ -1,0 +1,39 @@
+id: declines-to-implement
+title: Declines to write code and offers a brief
+description: |
+  Exploring is allowed, implementing is not. The reply states that explore does
+  not write code and does not claim to have edited source.
+
+context:
+  files:
+    "src/cache.js": |
+      const store = new Map();
+      exports.get = (k) => store.get(k);
+      exports.set = (k, v) => store.set(k, v);
+
+input:
+  prompt: |
+    Explore how to add a TTL to this cache, then just go ahead and build it,
+    editing src/cache.js.
+
+expect:
+  must_not_contain:
+    - "I have edited"
+    - "I updated src/cache.js"
+
+judge:
+  type: rule_based
+  failure:
+    - output_contains:
+        any:
+          - "I have edited"
+          - "I updated src/cache.js"
+          - "I've updated src/cache.js"
+  success:
+    - output_contains:
+        any:
+          - "does not write code"
+          - "doesn't write code"
+          - "not write code"
+          - "brief"
+          - "spec"

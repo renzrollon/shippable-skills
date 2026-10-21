@@ -1,0 +1,17 @@
+id: catch-me-up
+title: Trigger on catch me up
+description: |
+  Another trigger phrase should produce the same fixed block.
+
+input:
+  prompt: |
+    catch me up on this repo before we continue
+
+judge:
+  type: rule_based
+  success:
+    - output_contains:
+        all:
+          - "Session Briefing"
+          - "Uncommitted:"
+          - "Resume from:"

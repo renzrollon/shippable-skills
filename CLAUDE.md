@@ -2,7 +2,7 @@
 
 Skills are organized into bucket folders under `skills/`:
 
-- `engineering/`: daily code work (none yet)
+- `engineering/`: daily code work (bump-release, fix-tests, explore)
 - `productivity/`: daily non-code workflow tools
 - `misc/`: kept around but rarely used, not promoted
 - `in-progress/`: beta, not shipped in the plugin

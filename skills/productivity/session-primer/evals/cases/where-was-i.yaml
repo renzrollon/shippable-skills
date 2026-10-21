@@ -1,0 +1,17 @@
+id: where-was-i
+title: Trigger on where was I
+description: |
+  Natural-language orientation request should produce the briefing.
+
+input:
+  prompt: |
+    where was I? I just reopened this repo.
+
+judge:
+  type: rule_based
+  success:
+    - output_contains:
+        all:
+          - "Session Briefing"
+          - "Branch:"
+          - "Next step:"

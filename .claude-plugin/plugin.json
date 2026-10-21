@@ -2,7 +2,7 @@
   "name": "shippable-skills",
   "displayName": "Shippable Skills",
   "version": "0.1.0",
-  "description": "Shippable agent skills for real sessions: retro the conversation you are still in, and a repo-native product spine that helps an engineer act as product owner (threads, one-pager, epics, briefs).",
+  "description": "Shippable agent skills for real sessions: bump every manifest version in lockstep, fix failing tests by root cause, explore a codebase before designing a change, hand off and re-prime a session, retro the conversation you are still in, and a repo-native product spine.",
   "author": {
     "name": "Carl Rollon",
     "url": "https://github.com/renzrollon"
@@ -16,10 +16,23 @@
     "product-spine",
     "product-management",
     "productivity",
-    "token-economy"
+    "token-economy",
+    "bump-release",
+    "fix-tests",
+    "explore",
+    "session-handoff",
+    "session-primer",
+    "release",
+    "testing",
+    "engineering"
   ],
   "skills": [
+    "./skills/engineering/bump-release",
+    "./skills/engineering/fix-tests",
+    "./skills/engineering/explore",
     "./skills/productivity/session-retro",
-    "./skills/productivity/product-spine"
+    "./skills/productivity/product-spine",
+    "./skills/productivity/session-handoff",
+    "./skills/productivity/session-primer"
   ]
 }

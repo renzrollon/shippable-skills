@@ -63,8 +63,9 @@ A short chat report, in a deliberate order:
    repeatable step done *around* it that belongs *inside* it, written as a
    durable wire-in; plus new skill candidates when a procedure had no home.
 
-Handoffs land in `.claude/handoff/` when that directory already exists,
-otherwise `.agents/handoff/`. The chat reply is the one-line index into them.
+Handoffs land in a path you pass or configure (`shippable-handoff-dir:` in your
+instruction file), else the first existing of `.claude/handoff/`,
+`.agents/handoff/`, `docs/handoff/`, else a new `.agents/handoff/`. The chat reply is the one-line index into them.
 It does not dump a report and then dump it again.
 
 ## The costs, stated
@@ -104,7 +105,8 @@ No. It is user-invoked. You type `/session-retro` (or pick it from the skill
 picker). The model is instructed not to start it on its own.
 
 **Where did my wire-in file go?**
-`.claude/handoff/` if that folder already exists in the project, otherwise
+A path you passed or configured wins. Otherwise the first existing of
+`.claude/handoff/`, `.agents/handoff/`, `docs/handoff/`, and if none exists a new
 `.agents/handoff/`. Ask for the path back: the chat reply lists every file
 written.
 

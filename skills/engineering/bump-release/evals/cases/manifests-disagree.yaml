@@ -1,0 +1,39 @@
+id: manifests-disagree
+title: Asks which manifest is authoritative when versions differ
+description: |
+  package.json says 1.2.0 and the plugin manifest says 1.3.0. The skill lists
+  both and asks which is authoritative before any edit.
+
+context:
+  files:
+    "package.json": |
+      {"name": "demo", "version": "1.2.0"}
+    ".claude-plugin/plugin.json": |
+      {"name": "demo", "version": "1.3.0"}
+
+input:
+  prompt: |
+    /bump-release minor
+
+expect:
+  must_not_contain:
+    - "Release preview"
+
+judge:
+  type: rule_based
+  failure:
+    - output_contains:
+        any:
+          - "Release preview"
+  success:
+    - output_contains:
+        any:
+          - "1.2.0"
+    - output_contains:
+        any:
+          - "1.3.0"
+    - output_contains:
+        any:
+          - "authoritative"
+          - "which one"
+          - "which is"

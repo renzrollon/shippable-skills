@@ -6,8 +6,10 @@ writing the skill itself.
 
 **Path:** `<handoff-dir>/skill-candidate-<slug>-<YYYYMMDD-HHMMSS>.md`
 
-`<handoff-dir>` is `.claude/handoff` if that directory already exists, otherwise
-`.agents/handoff`. Slug = the proposed skill name in kebab-case.
+`<handoff-dir>` is a path the user passed or named in the request, else a `shippable-handoff-dir: <path>`
+line in the instruction file (the first existing of `AGENTS.md`, `CLAUDE.md`,
+`.github/copilot-instructions.md`; ignored when absolute or containing `..`), else the first existing of `.claude/handoff/`,
+`.agents/handoff/`, `docs/handoff/`, else `.agents/handoff/` created. Slug = the proposed skill name in kebab-case.
 
 **When to write**
 

@@ -1,0 +1,33 @@
+schema_version: v1alpha1
+
+# explore is model-invoked (no disable flag). Prompts are natural language that
+# should trigger it, except the single-file case, which should stay single.
+# Rule-based judges only; the marker line is the contract being graded.
+
+environment:
+  type: none
+
+skills:
+  - source: local_path
+    path: .
+
+engine:
+  name: claude_code
+
+cases:
+  files:
+    - evals/cases/broad-question-marker.yaml
+    - evals/cases/single-file-stays-single.yaml
+    - evals/cases/declines-to-implement.yaml
+    - evals/cases/autonomous-brief.yaml
+    - evals/cases/shared-value-sweep.yaml
+  defaults:
+    timeout_seconds: 240
+    max_turns: 14
+    collect_artifacts:
+      - ".agents/handoff/**"
+      - ".claude/handoff/**"
+      - "docs/handoff/**"
+
+report:
+  formats: [json]

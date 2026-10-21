@@ -1,0 +1,27 @@
+id: writes-resume-phrase
+title: Prints the file path and the verbatim resume phrase
+description: |
+  A plain invocation with a slug. The reply must carry the resume phrase and a
+  handoff file path.
+
+input:
+  prompt: |
+    /session-handoff eval-demo
+
+expect:
+  must_not_contain:
+    - "I could not write the handoff"
+
+judge:
+  type: rule_based
+  failure:
+    - output_contains:
+        any:
+          - "I could not write the handoff"
+  success:
+    - output_contains:
+        any:
+          - "and continue from its Next Steps."
+    - output_contains:
+        any:
+          - "handoff-eval-demo-"

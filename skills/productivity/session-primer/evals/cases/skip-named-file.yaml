@@ -1,0 +1,19 @@
+id: skip-named-file
+title: No briefing for a question about a file
+description: |
+  A question naming a specific file is answered, not briefed.
+
+input:
+  prompt: |
+    how does README.md describe installation?
+
+expect:
+  must_not_contain:
+    - "## Session Briefing"
+
+judge:
+  type: rule_based
+  failure:
+    - output_contains:
+        any:
+          - "## Session Briefing"

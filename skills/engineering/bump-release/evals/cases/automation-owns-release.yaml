@@ -1,0 +1,35 @@
+id: automation-owns-release
+title: Names the release tool and makes no edit
+description: |
+  A changesets directory means a hand bump would fight the tool. The reply
+  names changesets and stops before any preview or edit.
+
+context:
+  files:
+    "package.json": |
+      {"name": "demo", "version": "1.2.0"}
+    ".changeset/config.json": |
+      {"changelog": "@changesets/cli/changelog", "commit": false}
+
+input:
+  prompt: |
+    /bump-release patch
+
+expect:
+  must_not_contain:
+    - "1.2.1"
+
+judge:
+  type: rule_based
+  failure:
+    - output_contains:
+        any:
+          - "Release preview"
+          - "1.2.1"
+  success:
+    - output_contains:
+        any:
+          - "changeset"
+    - output_contains:
+        any:
+          - "Release report"

@@ -1,0 +1,5 @@
+interface:
+  display_name: "Bump release"
+  short_description: "Bump the version in every manifest, then commit, tag, push, and release"
+policy:
+  allow_implicit_invocation: false

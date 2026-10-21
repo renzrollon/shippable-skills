@@ -2,7 +2,7 @@
   "name": "shippable-skills",
   "version": "0.1.0",
   "private": true,
-  "description": "Shippable agent skills: session retro and product spine, installable on Cursor, Copilot, Codex, Claude Code, and other Agent Skills hosts.",
+  "description": "Shippable agent skills: release bumps, test repair, codebase exploration, session handoff and primer, session retro, and product spine, installable on Cursor, Copilot, Codex, Claude Code, and other Agent Skills hosts.",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -21,7 +21,15 @@
     "cursor",
     "copilot",
     "codex",
-    "claude-code"
+    "claude-code",
+    "bump-release",
+    "fix-tests",
+    "explore",
+    "session-handoff",
+    "session-primer",
+    "release",
+    "testing",
+    "engineering"
   ],
   "scripts": {
     "validate": "claude plugin validate . --strict"

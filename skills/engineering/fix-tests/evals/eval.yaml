@@ -1,0 +1,30 @@
+schema_version: v1alpha1
+
+# fix-tests is model-invoked (no disable flag). Prompts are natural language
+# that should trigger it. Cases plant small fixtures: a Node project with one
+# wrong implementation, a pom.xml, and a CI log. Rule-based judges only.
+
+environment:
+  type: none
+
+skills:
+  - source: local_path
+    path: .
+
+engine:
+  name: claude_code
+
+cases:
+  files:
+    - evals/cases/red-suite-fix-source.yaml
+    - evals/cases/refuse-skip-to-green.yaml
+    - evals/cases/not-a-test-failure.yaml
+    - evals/cases/dry-run-diagnoses.yaml
+    - evals/cases/maven-discovery.yaml
+    - evals/cases/from-ci-log.yaml
+  defaults:
+    timeout_seconds: 240
+    max_turns: 14
+
+report:
+  formats: [json]

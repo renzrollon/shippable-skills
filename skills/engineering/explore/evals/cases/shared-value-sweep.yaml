@@ -1,0 +1,39 @@
+id: shared-value-sweep
+title: A shared-value change sweeps every reader
+description: |
+  Lowercasing a value that two files read is the case the skill always
+  sweeps. The reply should name the readers still using the raw form.
+
+context:
+  files:
+    "src/signup.js": |
+      exports.save = (db, email) => db.put('user:' + email, { email });
+    "src/login.js": |
+      exports.find = (db, email) => db.get('user:' + email);
+    "src/invite.js": |
+      exports.mail = (user) => 'to: ' + user.email;
+
+input:
+  prompt: |
+    Investigate what would break if we normalise emails to lowercase when we
+    save them in src/signup.js.
+
+expect:
+  must_not_contain:
+    - "I have edited"
+
+judge:
+  type: rule_based
+  failure:
+    - output_contains:
+        any:
+          - "I have edited"
+  success:
+    - output_contains:
+        any:
+          - "login.js"
+    - output_contains:
+        any:
+          - "reader"
+          - "consum"
+          - "lookup"

@@ -1,3 +1,7 @@
+# product-spine
+
+Share this skill as the folder that holds its human README: [`skills/productivity/product-spine/`](../../skills/productivity/product-spine/).
+
 ## What it does
 
 `product-spine` helps an **engineer act as product owner**. Bare invocation

@@ -1,0 +1,35 @@
+schema_version: v1alpha1
+
+# session-handoff is user-invoked (disable-model-invocation: true). Prompts
+# start with /session-handoff so Claude Code expands the skill. Cases score the
+# live eval session, not a planted transcript. Two cases plant canary strings:
+# quoting them is a fail. Rule-based judges only.
+
+environment:
+  type: none
+
+skills:
+  - source: local_path
+    path: .
+
+engine:
+  name: claude_code
+
+cases:
+  files:
+    - evals/cases/writes-resume-phrase.yaml
+    - evals/cases/redacts-secret.yaml
+    - evals/cases/explicit-handoff-dir.yaml
+    - evals/cases/refuse-transcript-reread.yaml
+    - evals/cases/constraint-needs-yes.yaml
+  defaults:
+    timeout_seconds: 180
+    max_turns: 10
+    collect_artifacts:
+      - ".agents/handoff/**"
+      - ".claude/handoff/**"
+      - "docs/handoff/**"
+      - "custom-handoffs/**"
+
+report:
+  formats: [json]
