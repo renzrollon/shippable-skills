@@ -20,8 +20,8 @@ cases:
   files:
     - evals/cases/threads-default-map.yaml
     - evals/cases/threads-no-spine-files.yaml
-    - evals/cases/draft-task-stays-draft.yaml
-    - evals/cases/review-task-verdict.yaml
+    - evals/cases/draft-brief-stays-draft.yaml
+    - evals/cases/review-brief-verdict.yaml
     - evals/cases/capability-no-primer.yaml
     - evals/cases/capability-from-gaps.yaml
     - evals/cases/refuse-code.yaml
@@ -29,7 +29,6 @@ cases:
     timeout_seconds: 180
     max_turns: 10
     collect_artifacts:
-      - "tasks/**"
       - "docs/product/**"
 
 report:

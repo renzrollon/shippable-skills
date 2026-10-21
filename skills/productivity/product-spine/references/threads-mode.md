@@ -31,14 +31,18 @@ Read or list, each once, best-effort:
 - `docs/product/one-pager/current.md` (and `docs/product/one-pager/TEMPLATE.md`
   if present)
 - `docs/product/epics/*.md`
-- `tasks/*.md` and `tasks/README.md`
+- `docs/product/briefs/*.md`
+- directory names under `openspec/changes/` (in-flight changes; absence is
+  fine; do not read or write files inside)
 - `docs/product/context/platform-primer.md`
 - `docs/product/context/capability-gaps.md`
 - `docs/product/context/golden-path/*.md`
 
 Return: which files exist; §3 bets and §4 initiative **heading text**; epic
-titles and ladder lines; task titles, `Status`, and `Part of:` / `Ladders
-to:`; primer section names; gap one-liners. Invent nothing. Name absences.
+titles and ladder lines; brief titles, `Status`, `Suggested change:`, and
+`Part of:` / `Ladders to:`; in-flight change folder names; primer section
+names; gap one-liners. Invent nothing. Name absences. Do not propose a
+thread that duplicates an existing brief title or change folder name.
 
 ## Brief 2: Surfaces
 
@@ -58,9 +62,9 @@ From the Spine and Surfaces findings (or by reading the same paths if
 running sequential):
 
 - gaps in `capability-gaps.md` versus what the primer actually offers
-- thin or orphaned ladder lines (task/epic pointing at a heading or file
+- thin or orphaned ladder lines (brief/epic pointing at a heading or file
   that is missing)
-- signals that users cannot complete the job today (P0-shaped), cited
+- signals that users cannot complete the job today (now-shaped), cited
 
 Return: each friction with a path, or `unknown`. Do not answer capability
 `Yes today` from memory.
@@ -81,7 +85,7 @@ do not claim what the platform can do today.
 N. **[Kind]** <title>
    Need: who / friction / outcome (one line)
    Evidence: <path>[, <path>]
-   Artefact: task | epic
+   Artefact: brief | epic
    Ladder: <epic path> | docs/product/one-pager/current.md §4 <heading> |
            (one-pager not yet written)
    Confidence: grounded | thin
@@ -93,7 +97,7 @@ need. `thin` means the need is inferred from a weak signal (a TODO, a
 README wish); still cite that path.
 
 Suggested artefact: `epic` when the work is a feature in flight with
-discovery; `task` when it is one unit the coding agent could execute.
+discovery; `brief` when it is one product slice for a change proposal.
 
 ## Visual: mermaid in chat (not a vendor canvas)
 
@@ -118,9 +122,9 @@ flowchart LR
   now --> next --> later
 ```
 
-Put **Fix** / P0-shaped work in `now` when evidence says users cannot
-complete the job. `later` is P2/P3-shaped. If you only have two threads,
-omit an empty subgraph rather than drawing placeholders.
+Put **Fix** / users-cannot-complete-the-job work in `now` when evidence
+says so. `later` is valuable-but-not-this-cycle. If you only have two
+threads, omit an empty subgraph rather than drawing placeholders.
 
 ## Reply shape
 
@@ -129,12 +133,13 @@ omit an empty subgraph rather than drawing placeholders.
 3. Closing line (exact job, not a new heading): pick a number to draft, or
    name `review` / `capability`.
 
-Never re-dump a spine file into chat. Never write `Status: ready`. Never
-create mockups.
+Never re-dump a spine file into chat. Never write `Status: ready` or
+`ready-to-propose`. Never create mockups.
 
 ## After the user picks
 
-"draft 3", "land thread 2", "draft 1 as a task" is **draft mode** with that
-card as inline context. Read [draft-mode.md](draft-mode.md). Write the
-artefact this turn when the card already has need, ladder, and (for a task)
-enough to put two criteria, even if those start as TBD.
+"draft 3", "land thread 2", "draft 1 as a brief", "draft 1 as a task" is
+**draft mode** with that card as inline context. Read
+[draft-mode.md](draft-mode.md). Write the artefact this turn when the card
+already has need and ladder. For a brief, TBD constraints are enough when
+the user picked the card and did not supply In / Out.

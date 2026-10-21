@@ -29,10 +29,10 @@ margins. Flat, editorial, print-like.
   tight tracking.
 - Section labels: 11px-ish all-caps copper sans, letterspaced.
 - Body: small humanist sans, charcoal, two sentences max.
-- Meta (`v0.2.0`, `SHIPPABLE SKILLS · MIT`, host list): small gray sans.
+- Meta (`v0.3.0`, `SHIPPABLE SKILLS · MIT`, host list): small gray sans.
 
 **Chrome (every card).**
-- Top left: `/product-spine` in bold mono, then `v0.2.0` in small gray.
+- Top left: `/product-spine` in bold mono, then `v0.3.0` in small gray.
 - Top right: `SHIPPABLE SKILLS · MIT` small all-caps.
 - Thin full-width hairline under the header.
 - Footer left: rounded rect, 1px copper border, no fill, mono text
@@ -61,7 +61,7 @@ reference.
 **Body (two sentences):**
 Most PM skills fill a template. This one reads the repo, fans out, and
 proposes the next features, improvements, and fixes. Pick a thread and it
-lands on a greppable spine: one-pager, epics, tasks.
+lands on a greppable spine: one-pager, epics, briefs.
 
 **Metrics box** (thin gray border, three columns, copper all-caps labels):
 
@@ -106,15 +106,15 @@ What to build next, then where it lives.
 
 **Accent copper hairline + body (two sentences):**
 Three read-only gathers run in parallel. You get a Now / Next / Later map.
-Pick a number; draft writes a file. The coding agent does not start until
-you flip Status to ready.
+Pick a number; draft writes a file. The change-proposal skill does not
+start until you flip a brief to ready-to-propose.
 
 **Block 1: FAN-OUT**
 Copper all-caps label `FAN-OUT`. Three equal columns separated by gray
 hairlines, no filled boxes:
 
 - `SPINE`
-  One-pager, epics, tasks, primer. Invent nothing.
+  One-pager, epics, briefs, primer. Invent nothing.
 - `SURFACES`
   README, routes, TODOs. Cite paths.
 - `FRICTION`
@@ -146,8 +146,8 @@ one-pager    docs/product/one-pager/current.md
 epic         docs/product/epics/*.md
              feature in flight
         ↑ Part of
-task         tasks/*.md
-             unit of work
+brief        docs/product/briefs/*.md
+             what / why for a change
 ```
 
 Keep the up-arrows and the words `Ladders to` / `Part of` (those are the

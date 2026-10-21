@@ -3,13 +3,13 @@
 `product-spine` helps an **engineer act as product owner**. Bare invocation
 fans out over the repo and proposes several **threads** (new features,
 improvements, fixes) on a mermaid map. Picking a thread lands it on the
-repo-native spine: a live one-pager, epics, and tasks that ladder to each
-other. It also reviews whether a file could be flipped to `ready`, and
-answers "can the platform do X today" from the project's own primer.
+repo-native spine: a live one-pager, epics, and briefs that ladder to each
+other. It also reviews whether a brief could be flipped to `ready-to-propose`
+(or an epic to `ready`), and answers "can the platform do X today" from the
+project's own primer.
 
 It writes artefacts. It never writes code. Threads write nothing until you
-pick one. A request to implement is a one-line refusal pointing at the task
-file.
+pick one. A request to implement is a one-line refusal pointing at the brief.
 
 ## When to reach for it
 
@@ -20,15 +20,15 @@ or `capability "<question>"` when you already know the mode.
 | Situation | Why this skill |
 | --- | --- |
 | You need to function as PO and do not know what is next | bare `/product-spine`: mermaid map plus numbered Feature / Improvement / Fix cards |
-| A slice of work has no file yet | `draft task` (or `draft epic`) in the house format, `Status: draft`; or pick a thread number |
-| You are about to let the coding agent pick a task up | `review` reports whether **you** could flip it to `ready` |
+| A slice of work has no file yet | `draft brief` (or `draft epic`) in the house format, `Status: draft`; or pick a thread number. `draft task` maps to `draft brief`. |
+| You are about to hand a brief to the change-proposal skill | `review` reports whether **you** could flip it to `ready-to-propose` |
 | "Can users do X today?" | `capability` cites the primer, or says `Cannot confirm` if there is none |
 | Strategy is still in chat | `draft one-pager` so bets and initiatives become greppable headings |
-| Someone asked for a PRD or a stack of user stories | This skill is the replacement: the task file's four sections are the unit |
+| Someone asked for a PRD or a stack of user stories | This skill is the replacement: the brief's four sections are the unit |
 
 Skip it when you want a framework lesson (how to write a Cohn story, how to
-score RICE). Skip it when the ask is to implement the task: that is a
-different agent, against a `ready` file.
+score RICE). Skip it when the ask is to implement the brief: that is a
+different skill, against a `ready-to-propose` file.
 
 ## The mechanism
 
@@ -46,17 +46,21 @@ docs/product/one-pager/current.md     §3 bets · §4 initiatives
 docs/product/epics/<file>.md          feature in flight
         ^
         |  Part of: <epic>
-tasks/<date>-<slug>.md                unit of work
+docs/product/briefs/<date>-<slug>.md  what / why for a change proposal
 ```
 
-- **Every task serving a bet:** `grep -R -n "Ladders to:.*<initiative heading>" tasks docs/product/epics`
-- **Every task affected if a bet is killed:** `grep -R -n "Part of: \|Ladders to:" tasks`, then filter to that heading and its epics.
+- **Every brief serving a bet:** `grep -R -n "Ladders to:.*<initiative heading>" docs/product/epics docs/product/briefs`
+- **Every brief affected if a bet is killed:** `grep -R -n "Part of: \|Ladders to:" docs/product/epics docs/product/briefs`, then filter to that heading and its epics.
 
 Cite heading text, not only a section number, so a project that drops its own
 `docs/product/one-pager/TEMPLATE.md` still greps. Org vocabulary is not in
 the skill: it is in `docs/product/context/platform-primer.md`,
 `capability-gaps.md`, and optional `golden-path/*.md`, read if present and
 never invented when absent.
+
+A brief is input to the project's change-proposal skill (`Suggested change:`
+is kebab-case glue for `openspec/changes/<slug>/`). This skill never writes
+that folder.
 
 ## What it produces
 
@@ -65,13 +69,15 @@ Depends on the mode:
 1. **Threads** (default): a mermaid Now / Next / Later map and numbered cards
    (kind, need, evidence paths, suggested artefact, ladder, `grounded` or
    `thin`). Chat only. No `docs/product/threads/` file.
-2. **Draft**: a file at the fixed path (`tasks/YYYY-MM-DD-<slug>.md`,
+2. **Draft**: a file at the fixed path (`docs/product/briefs/YYYY-MM-DD-<slug>.md`,
    `docs/product/epics/YYYY-MM-DD-<slug>.md`, or
-   `docs/product/one-pager/current.md`), always `Status: draft` for tasks and
-   epics, plus a short chat line (path, ladder, one open item). The file is
-   not pasted back into chat.
+   `docs/product/one-pager/current.md`), always `Status: draft` for briefs and
+   epics, plus a short chat line (path, ladder, one open item; briefs also
+   say to pass the path to the change-proposal skill). The file is not pasted
+   back into chat.
 3. **Review**: a block with Strong / Missing / Ladder / Platform pieces /
-   Ready to flip / Next step. Read-only. The skill never flips `Status`.
+   Ready to propose (brief) or Ready to flip (epic) / Next step. Read-only.
+   The skill never flips `Status`.
 4. **Capability**: Yes today / No today / Partly / Cannot confirm, cited from
    the primer. A proposed one-line gap, not written unless you ask.
 
@@ -80,18 +86,19 @@ Depends on the mode:
 - **Threads are proposals, not a tracker.** They live in chat until you draft
   one. They are not a fourth artefact and not a backlog tool.
 - **No PRD, no user stories.** Discovery that would have lived in a PRD lives
-  in the epic's sibling folder and in the task's four sections. If you need a
+  in the epic's sibling folder and in the brief's four sections. If you need a
   ten-section PRD, this is the wrong skill.
-- **No stories in the Mike Cohn / Gherkin sense.** Acceptance criteria are
-  checkboxes on the task. The user need is who, friction, outcome.
+- **No stories in the Mike Cohn / Gherkin sense.** Constraints are In / Out /
+  Do not invent on the brief. The user need is who, friction, outcome. Spec
+  deltas and how live in the change, not here.
 - **Primer or nothing for capability.** With no
   `docs/product/context/platform-primer.md`, the answer is `Cannot confirm`.
   The skill will not guess from training data. Threads may still run; they
   mark `thin` and do not answer `Yes today`.
-- **Draft never auto-flips.** New files stay `Status: draft`. Ready is a
-  human edit, after review says you could.
+- **Draft never auto-flips.** New files stay `Status: draft`. Ready-to-propose
+  (brief) or ready (epic) is a human edit, after review says you could.
 
-Product decisions are captured inline (task §4, epic §5, one-pager §1). There
+Product decisions are captured inline (brief §4, epic §5, one-pager §1). There
 is no decisions folder and no ADR from this skill.
 
 ## Common questions
@@ -115,8 +122,8 @@ An engineer acting as PO needs what to work on next, not a blank template.
 is a **framework curriculum**: each of the 77 skills teaches a PM method
 (Cohn stories and Gherkin, epic hypotheses, RICE/ICE, a 10-section PRD,
 Humanizing Work splits) and produces a chat answer or a template fill. None
-of them read a project's strategy file, check that a task ladders to a real
-initiative, enforce a `Status` / `Priority` contract, or answer "can the
+of them read a project's strategy file, check that a brief ladders to a real
+initiative, enforce a `Status` contract, or answer "can the
 platform do X today" from a primer. There is no name collision (no "spine"
 in that catalogue).
 
@@ -139,29 +146,38 @@ will not pretend to know the platform. Threads still run from README and
 code signals.
 
 **Why does every new file say `Status: draft`?**
-So a half-filled task cannot be mistaken for something the coding agent
-should execute. You flip to `ready` when review says you could, and you set
-P0 to P3 at the same time.
+So a half-filled brief cannot be mistaken for something ready to propose.
+You flip a brief to `ready-to-propose` (or an epic to `ready`) when review
+says you could.
+
+**Why a brief and not a task or ticket?**
+A ticket would duplicate the change folder the coding agent already works
+from. The brief carries only what / why / ladder / primer. Pass its path to
+the change-proposal skill. Saying `draft task` still works as an alias for
+`draft brief`.
 
 ## It's working if
 
 - Bare `/product-spine` draws a mermaid map and numbered Feature /
   Improvement / Fix cards with evidence paths (or `thin`), and writes no
   `src/` file.
-- A new task or epic on disk says `Status: draft` and has exactly one of
-  `Part of:` / `Ladders to:`, pointing at a file or heading that exists.
-- grep for an initiative heading finds the epics and tasks that serve it.
-- `review` on a thin file says `Ready to flip: no` and names one next step;
-  it does not edit the file.
+- A new brief or epic on disk says `Status: draft` and has exactly one of
+  `Part of:` / `Ladders to:`, pointing at a file or heading that exists. A
+  brief also has `Suggested change:` in kebab-case.
+- grep for an initiative heading finds the epics and briefs that serve it.
+- `review` on a thin brief says `Ready to propose: no` and names one next
+  step; it does not edit the file.
 - `capability` with no primer says `Cannot confirm` and names
   `platform-primer.md`. With a primer, it cites a section and does not invent
   a metric or a platform noun.
-- A request to implement is refused in one line. No patch, no `src/` edit.
+- A request to implement is refused in one line. No patch, no `src/` edit,
+  no write under `openspec/changes/`.
 
 ## Where it fits
 
 `product-spine` is the **house format** at the seam between product thinking
-and the coding agent that executes tasks. Threads are the PO coaching step.
-Framework skills (theirs or yours) can feed it. Execution skills pick up
-`ready` files. It does not replace a session retro, a plan, or a code review,
-and it does not run the implementation.
+and the change-proposal skill that authors how and spec. Threads are the PO
+coaching step. Framework skills (theirs or yours) can feed it. The brief is
+the handoff, not a tracker and not an implementation plan. It does not
+replace a session retro, a plan, or a code review, and it does not run the
+implementation.

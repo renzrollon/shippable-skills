@@ -39,12 +39,12 @@ baseline.
 
 ## 3. Strategy bets
 
-Named bets the roadmap will map to. Stable names: tasks and epics cite them
+Named bets the roadmap will map to. Stable names: briefs and epics cite them
 by heading text under §4, which must name the bet they serve.
 
 ## 4. Roadmap initiatives
 
-Stable headings. Epics and tasks ladder here:
+Stable headings. Epics and briefs ladder here:
 
 ### <Initiative heading>
 
@@ -63,7 +63,7 @@ Stable headings. Epics and tasks ladder here:
 
 ### 6.2 In flight
 
-<!-- Pointers to epics and ready tasks, not a second tracker. -->
+<!-- Pointers to epics and ready-to-propose briefs, not a second tracker. -->
 ```
 
 On a refresh of an existing `current.md`: snapshot first to

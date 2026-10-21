@@ -43,10 +43,6 @@ context:
       export function createPayment() {
         return { status: "created" };
       }
-    "tasks/README.md": |
-      # Tasks
-
-      ## Next-up
 
 input:
   prompt: |

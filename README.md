@@ -47,15 +47,15 @@ You type `/session-retro` or `/product-spine`. The agent will not start either i
 
 ## Why product-spine
 
-Most PM skill libraries teach a method in chat: a story template, a RICE table, a PRD outline. The artefact, if any, does not live next to the code, and nothing checks that a unit of work still ladders to a strategy bet.
+Most PM skill libraries teach a method in chat: a story template, a RICE table, a PRD outline. The artefact, if any, does not live next to the code, and nothing checks that a brief still ladders to a strategy bet.
 
 `product-spine` is repo-native. Bare invocation is an engineer-as-PO coach: it fans out over the repo and proposes Feature / Improvement / Fix threads on a mermaid map. Picking a thread lands it on three files at fixed paths. It refuses to invent the platform.
 
 - **Threads before templates.** What to work on next, grounded in evidence (or marked `thin`), not a blank form. Draft is how a picked thread lands.
-- **A greppable ladder** from task to epic to one-pager initiative, so "every task serving this bet" and "every task if we kill this bet" are grep lines, not a hunt through chat.
-- **No PRD and no user stories.** The task file's four sections (need, platform pieces, acceptance, reasons) are the unit; discovery sits in the epic's sibling folder.
+- **A greppable ladder** from brief to epic to one-pager initiative, so "every brief serving this bet" and "every brief if we kill this bet" are grep lines, not a hunt through chat.
+- **No PRD and no user stories.** The brief's four sections (need, platform pieces, constraints, reasons) are the unit; discovery sits in the epic's sibling folder. Spec and how live in the change, not here.
 - **Primer-grounded capability.** "Can users do X today" cites `docs/product/context/platform-primer.md`, or answers `Cannot confirm` if that file is missing.
-- **Decisions inline.** Trade-offs land in the task, the epic, or the one-pager change log. There is no decisions folder.
+- **Decisions inline.** Trade-offs land in the brief, the epic, or the one-pager change log. There is no decisions folder.
 
 New files stay `Status: draft` until you flip them. Docs: [product-spine](./docs/productivity/product-spine.md).
 
@@ -83,7 +83,7 @@ The [skills](https://github.com/vercel-labs/skills) CLI is the installer, not a 
 
 Dated gate results for `session-retro` 0.1.0 (21 Aug 2026) are in its [changelog](./skills/productivity/session-retro/CHANGELOG.md).
 
-`product-spine` **0.2.0** has not been through this gate yet. That run is the next release step.
+`product-spine` **0.3.0** has not been through this gate yet. That run is the next release step.
 
 ## Skills
 
@@ -94,7 +94,7 @@ These split on one axis: who can invoke them. **User-invoked** skills are reacha
 **User-invoked**
 
 - **[session-retro](./skills/productivity/session-retro/)**: Retro the current session. Score it against session shapes, flag token waste with next-turn fixes, and propose wire-ins into the skills this conversation actually called.
-- **[product-spine](./skills/productivity/product-spine/)**: Help an engineer act as product owner: suggest Feature / Improvement / Fix threads from the repo, then draft, review, and capability-check the one-pager, epics, and tasks that land them. Writes artefacts, never code.
+- **[product-spine](./skills/productivity/product-spine/)**: Help an engineer act as product owner: suggest Feature / Improvement / Fix threads from the repo, then draft, review, and capability-check the one-pager, epics, and briefs that land them. Writes artefacts, never code.
 
 **Model-invoked**
 

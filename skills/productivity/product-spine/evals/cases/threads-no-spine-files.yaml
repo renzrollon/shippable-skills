@@ -1,7 +1,7 @@
 id: threads-no-spine-files
 title: Threads with no product tree still emit a map
 description: |
-  No one-pager, epics, primer, or tasks. Only a short README. Threads mode
+  No one-pager, epics, primer, or briefs. Only a short README. Threads mode
   must still emit mermaid and at least one Feature / Improvement / Fix card,
   marked thin as needed. It must not answer Yes today from guesswork.
 

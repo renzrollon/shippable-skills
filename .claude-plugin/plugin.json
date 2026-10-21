@@ -2,7 +2,7 @@
   "name": "shippable-skills",
   "displayName": "Shippable Skills",
   "version": "0.1.0",
-  "description": "Shippable agent skills for real sessions: retro the conversation you are still in, and a repo-native product spine that helps an engineer act as product owner (threads, one-pager, epics, tasks).",
+  "description": "Shippable agent skills for real sessions: retro the conversation you are still in, and a repo-native product spine that helps an engineer act as product owner (threads, one-pager, epics, briefs).",
   "author": {
     "name": "Carl Rollon",
     "url": "https://github.com/renzrollon"

@@ -1,5 +1,5 @@
 interface:
   display_name: "Product spine"
-  short_description: "Suggest work threads, then draft, review, and capability-check the one-pager, epics, and tasks"
+  short_description: "Suggest work threads, then draft, review, and capability-check the one-pager, epics, and briefs"
 policy:
   allow_implicit_invocation: false

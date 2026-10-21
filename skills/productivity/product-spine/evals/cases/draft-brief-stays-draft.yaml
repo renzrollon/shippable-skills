@@ -1,9 +1,9 @@
-id: draft-task-stays-draft
-title: Draft task is saved Status draft with a ladder line
+id: draft-brief-stays-draft
+title: Draft brief is saved Status draft with a ladder line
 description: |
-  Inline user need, epic, and criteria. The skill must write a task file (and
-  echo the contract lines in chat) as Status: draft with Part of: or
-  Ladders to:. It must not flip the file to ready.
+  Inline user need, epic, and constraints. The skill must write a brief file
+  (and echo the contract lines in chat) as Status: draft with Part of: or
+  Ladders to:. It must not flip the file to ready or ready-to-propose.
 
 context:
   files:
@@ -36,25 +36,22 @@ context:
       ## 3. Out of scope
 
       - New payment methods
-    "tasks/README.md": |
-      # Tasks
-
-      ## Next-up
 
 input:
   prompt: |
-    /product-spine draft task User need: a payer whose card charge failed
+    /product-spine draft brief User need: a payer whose card charge failed
     cannot retry without re-uploading documents; they should retry the same
     payment. This is part of the epic at
-    docs/product/epics/2026-08-15-payment-recovery.md. Acceptance criteria:
-    retry uses the stored payment; documents already on file are not requested
-    again; the payer sees success or the new failure reason.
+    docs/product/epics/2026-08-15-payment-recovery.md. Constraints: In: retry
+    the stored payment and reuse documents already on file; Out: new payment
+    methods.
 
 expect:
   must_contain:
     - "Status: draft"
   must_not_contain:
     - "Status: ready"
+    - "Status: ready-to-propose"
 
 judge:
   type: rule_based
@@ -62,6 +59,7 @@ judge:
     - output_contains:
         any:
           - "Status: ready"
+          - "Status: ready-to-propose"
   success:
     - output_contains:
         all:

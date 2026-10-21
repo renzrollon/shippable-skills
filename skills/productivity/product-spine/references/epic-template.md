@@ -33,9 +33,9 @@ Ladders to: docs/product/one-pager/current.md §4 <initiative heading>
 
 - <what this epic will not do>
 
-## 4. Tasks
+## 4. Briefs
 
-- [ ] `tasks/YYYY-MM-DD-<slug>.md` <title>
+- [ ] `docs/product/briefs/YYYY-MM-DD-<slug>.md` <title>
 
 ## 5. Reasons for product decision
 
@@ -45,5 +45,5 @@ Ladders to: docs/product/one-pager/current.md §4 <initiative heading>
 `Ladders to:` cites the §4 **heading text**, not only the number. There is no
 `Part of:` on an epic.
 
-§4 is a list of task files that serve this epic. Review compares it to
-`tasks/*.md` whose `Part of:` points here.
+§4 is a list of brief files that serve this epic. Review compares it to
+`docs/product/briefs/*.md` whose `Part of:` points here.

@@ -1,8 +1,8 @@
-id: review-task-verdict
-title: Review of a thin task says not ready to flip
+id: review-brief-verdict
+title: Review of a thin brief says not ready to propose
 description: |
-  Planted task has empty acceptance criteria. Review is read-only and must
-  emit the contract headings plus Ready to flip: no.
+  Planted brief has empty product constraints. Review is read-only and must
+  emit the contract headings plus Ready to propose: no.
 
 context:
   files:
@@ -19,11 +19,12 @@ context:
 
       Status: draft
       Ladders to: docs/product/one-pager/current.md §4 Recover failed payments
-    "tasks/2026-09-01-x.md": |
-      # Incomplete retry task
+    "docs/product/briefs/2026-09-01-x.md": |
+      # Incomplete retry brief
 
       Status: draft
       Part of: docs/product/epics/2026-08-15-payment-recovery.md
+      Suggested change: retry-failed-payment
 
       ## 1. User need
 
@@ -35,7 +36,7 @@ context:
 
       primer absent
 
-      ## 3. Acceptance criteria
+      ## 3. Product constraints
 
       ## 4. Reasons for product decision
 
@@ -43,7 +44,7 @@ context:
 
 input:
   prompt: |
-    /product-spine review tasks/2026-09-01-x.md
+    /product-spine review docs/product/briefs/2026-09-01-x.md
 
 expect:
   must_contain:
@@ -51,16 +52,16 @@ expect:
     - "Missing"
     - "Ladder"
     - "Next step"
-    - "Ready to flip: no"
+    - "Ready to propose: no"
   must_not_contain:
-    - "Ready to flip: yes"
+    - "Ready to propose: yes"
 
 judge:
   type: rule_based
   failure:
     - output_contains:
         any:
-          - "Ready to flip: yes"
+          - "Ready to propose: yes"
   success:
     - output_contains:
         all:
@@ -68,4 +69,4 @@ judge:
           - "Missing"
           - "Ladder"
           - "Next step"
-          - "Ready to flip: no"
+          - "Ready to propose: no"

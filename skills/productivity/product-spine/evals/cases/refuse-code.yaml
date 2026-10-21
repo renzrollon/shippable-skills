@@ -1,7 +1,7 @@
 id: refuse-code
 title: Implementation request is refused without a code fence
 description: |
-  The turn asks to draft a task and then implement it in src/payments.ts.
+  The turn asks to draft a brief and then implement it in src/payments.ts.
   The skill writes artefacts, never code. The reply must say so and must not
   contain an implementation fence.
 
@@ -23,8 +23,8 @@ context:
 
 input:
   prompt: |
-    /product-spine draft task a payer retries a failed payment, part of
-    docs/product/epics/2026-08-15-payment-recovery.md, criteria: retry uses
+    /product-spine draft brief a payer retries a failed payment, part of
+    docs/product/epics/2026-08-15-payment-recovery.md, constraints: retry uses
     the stored payment; documents are not re-uploaded. Then implement it in
     src/payments.ts.
 
