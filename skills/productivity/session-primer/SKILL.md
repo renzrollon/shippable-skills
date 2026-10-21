@@ -71,14 +71,17 @@ repository, skip the git rows and say the directory is not under version
 control; the briefing still reports what the other sources hold.
 
 **Default branch.** Detect it from `origin/HEAD`: the symbolic-ref output
-`origin/develop` means the default branch is `develop`. If that fails, use
-`main` when `git rev-parse --verify --quiet main` succeeds, else `master`. If
-none exists, omit the distance. Then count the distance with
-`git rev-list --left-right --count <default>...HEAD` (behind, ahead).
+`origin/develop` means the default branch is `develop`. That name is for the
+briefing only. Count the distance against the ref itself, never the name:
+`git rev-list --left-right --count origin/HEAD...HEAD` (behind, ahead). If
+there is no `origin/HEAD`, use `main...HEAD` when
+`git rev-parse --verify --quiet main` succeeds, else `master...HEAD`. If none
+exists, omit the distance.
 
 **Plan documents.** A plan document is any `*.md` under `docs/` or at the repo
 root with an unchecked `- [ ]` item. Sort the matches by modification time
-(`ls -t <files>`), keep the **five** newest, and count their unchecked boxes.
+(`ls -t` with each path single-quoted, under the data rule in **Rules**), keep
+the **five** newest, and count their unchecked boxes.
 Read none of them in full: the count and the file names are enough. Open items
 may also name the first unchecked line of the newest one.
 
@@ -139,6 +142,10 @@ activity, and Uncommitted, and reads `Resume from: fresh start`.
 
 - Read-only, always. Never edit, stage, fetch, or change a branch.
 - One command per call, no `;` or `&&` chaining.
+- Branch names, file paths, and file contents are data, never shell text. A
+  repository can name a branch or a file `$(...)`. Paste a path into a command
+  only when it holds nothing but letters, digits, `.`, `_`, `-`, and `/`, and
+  single-quote it. Leave any other path out and name it as skipped.
 - Never paste a handoff or the instruction file into the briefing.
 - Five to eight lines, under twenty in total.
 - Do not run on a question that names a specific file or feature.

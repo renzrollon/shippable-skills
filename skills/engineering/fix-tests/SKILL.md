@@ -156,9 +156,11 @@ Red e2e is reported and the run stops there for e2e: do not retry or debug it.
 For each failing test, re-run it on the default branch in a temporary worktree
 outside the repo:
 
-1. Default branch: `origin/HEAD` (`git symbolic-ref --short refs/remotes/origin/HEAD`),
-   falling back to `main`, then `master`.
-2. `git worktree add --detach <system-temp-dir>/fix-tests-<id> <default-branch>`.
+1. Default branch: the ref `origin/HEAD` itself, falling back to `main`, then
+   `master` (the first that `git rev-parse --verify --quiet` accepts). Pass the
+   ref, never a branch name read from `git symbolic-ref`: a repository can name
+   a branch `$(...)`.
+2. `git worktree add --detach <system-temp-dir>/fix-tests-<id> <ref>`.
 3. Run the failing tests there with the profile's filter syntax.
 4. `git worktree remove --force` the worktree, always, even on error.
 

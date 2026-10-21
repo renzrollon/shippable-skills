@@ -22,8 +22,11 @@ The ladder is the point: it has to be greppable.
 Every brief serving a bet (match the initiative heading):
 
 ```bash
-grep -R -n "Ladders to:.*<initiative heading>" docs/product/epics docs/product/briefs
+grep -R -n 'Ladders to:.*<initiative heading>' docs/product/epics docs/product/briefs
 ```
+
+Single quotes keep a `$` or a backtick in the heading from running. If the
+heading holds a `'`, grep for a part of it without one.
 
 Every brief affected if that bet is killed (direct ladders plus briefs whose
 epic ladders there):

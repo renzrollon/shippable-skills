@@ -53,7 +53,7 @@ docs/product/epics/<file>.md          feature in flight
 docs/product/briefs/<date>-<slug>.md  what / why for a change proposal
 ```
 
-- **Every brief serving a bet:** `grep -R -n "Ladders to:.*<initiative heading>" docs/product/epics docs/product/briefs`
+- **Every brief serving a bet:** `grep -R -n 'Ladders to:.*<initiative heading>' docs/product/epics docs/product/briefs`
 - **Every brief affected if a bet is killed:** `grep -R -n "Part of: \|Ladders to:" docs/product/epics docs/product/briefs`, then filter to that heading and its epics.
 
 Cite heading text, not only a section number, so a project that drops its own
