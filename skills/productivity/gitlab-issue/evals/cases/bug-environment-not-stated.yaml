@@ -1,0 +1,20 @@
+# Fixture: scripts/fixtures/repo-full copied into the workspace.
+# Assertion: A bug draft with no environment marks both Environment lines Not stated and lists open questions.
+id: bug-environment-not-stated
+title: Bug draft marks an unknown environment
+description: |
+  A bug draft with no environment marks both Environment lines Not stated and lists open questions.
+
+input:
+  prompt: |
+    draft a bug issue: invoice export times out on large invoices
+
+judge:
+  type: rule_based
+  success:
+    - output_contains:
+        all:
+          - "## Environment"
+          - "Seen in: Not stated"
+          - "Worked before: Not stated"
+          - "## Open questions"

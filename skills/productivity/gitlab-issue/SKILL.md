@@ -53,7 +53,12 @@ Read the request and note:
 - **Wording.** "Create", "file", "raise", "open", "log" mean create. "Draft",
   "preview", "write up" mean return the draft only and never create.
 - **Metadata.** Any label, assignee, milestone, confidential flag, project, or
-  branch the requester named. Add nothing the requester did not name.
+  branch the requester named. Add nothing the requester did not name. The one
+  exception is a type label the project set (step 7).
+- **Possible security report.** The request describes a vulnerability or a
+  data exposure: someone can see, change, or do what they should not, a login
+  or permission check can be skipped, or a secret has leaked. Note it. Step 7
+  holds such an issue back unless the requester asked for a confidential one.
 
 ### 2. Resolve the target project
 
@@ -153,28 +158,50 @@ example of each. Layout notes for the spec files are in
 
 Audience split:
 
-- **Above the `<details>` block** the reader is a product owner or QA tester.
+- **Above the `<details>` blocks** the reader is a product owner or QA tester.
   Paraphrase technical Purpose text in plain words. Never add a file path,
   route, table or column name, environment variable name, or code that you
   took from the repo. If a Purpose names a database table, describe the
   behaviour without the table name.
-- **Requester-supplied** steps, URLs, and paths stay exactly as given, even
-  when they look technical.
-- **Bug with no steps.** Write that the requester did not give steps. Do not
-  invent them.
+- **Requester-supplied** steps, URLs, paths, and error text stay exactly as
+  given, even when they look technical.
+- **Never guess.** A section the request and the context cannot fill reads
+  `Not stated`. That covers Why, Who is affected, and both Environment lines.
+- **Why** (feature only). The problem or goal the request gives, else
+  `Not stated`. Do not make up a reason.
 - **Who is affected.** A persona from the index, else the role in the request,
   else `Not stated`.
-- **Acceptance criteria** are checkboxes: `- [ ] WHEN ... THEN ...`. If an
-  outline scenario covers behaviour a feature request changes, name it and its
-  capability under Today. If a bug contradicts an outline scenario, name that
-  scenario and its capability under Expected.
+- **Environment** (bug only). `- Seen in:` and `- Worked before:`, each from
+  the request, else `Not stated`. Do not work either out from a URL or from
+  the repo.
+- **Bug with no steps.** Write that the requester did not give steps. Do not
+  invent them.
+- **Acceptance criteria.** The heading reads `## Acceptance criteria (proposed)`
+  because you drafted them and nobody has agreed them yet. They are checkboxes,
+  `- [ ] WHEN ... THEN ...`, at least two. A feature has one for the new
+  behaviour and one for an edge case or a behaviour that must stay the same. A
+  bug has one for the fixed behaviour and one for a neighbouring case that
+  must still work. If an outline scenario covers behaviour a feature request
+  changes, name it and its capability under Today. If a bug contradicts an
+  outline scenario, name that scenario and its capability under Expected.
+- **Open questions.** Checkboxes, one per gap someone must close before work
+  starts: no reason given, no steps, an Environment line that reads
+  `Not stated`, and each choice you made in the criteria that the request does
+  not settle. Ask only, do not answer. Leave the section out when there are
+  none.
 - **Related** lists matched capability names, an overlapping active change, and
-  possible duplicate known-issue or backlog titles with their doc path.
+  possible duplicate known-issue or backlog titles with their doc path. With
+  context and no match it reads `None found`. With no context it reads
+  `Not checked (no project context)`.
+- **Logs** (bug only). Output the requester pasted that runs past five lines
+  goes unchanged in a fenced block inside `<details><summary>Logs</summary>`,
+  placed before the technical notes. Shorter error text stays under Actual.
+  With no such output there is no Logs block.
 - **Technical notes** go last, inside
-  `<details><summary>Technical notes (for developers)</summary>`: requirement
-  titles and repo-relative paths in backticks, such as
-  `openspec/specs/<name>/spec.md`. No code, no invented file names, no web
-  links built from a guessed branch.
+  `<details><summary>Technical notes (for developers)</summary>`: first a line
+  `Context read at` with the commit from step 3, then requirement titles and
+  repo-relative paths in backticks, such as `openspec/specs/<name>/spec.md`.
+  No code, no invented file names, no web links built from a guessed branch.
 - A bug title starts with `Bug: `. Add no authorship footer to any body.
 - With no context, cite no capability or path, and leave the technical notes
   block out.
@@ -183,6 +210,12 @@ Audience split:
 
 If the wording asked for a draft, preview, or write-up, create nothing and go
 to the reply.
+
+If step 1 noted a possible security report and the requester did not ask for a
+confidential issue, create nothing. Go to the reply with
+`Not created: possible security report`, and tell the requester that asking
+again with the word "confidential" files it. Never set the confidential flag
+on your own.
 
 Otherwise create in this order. The title and body reach a shell only through
 files. Never place them, or any requester text, in a command line.
@@ -216,6 +249,13 @@ Metadata checks, before use: a label or milestone must match
 `^[A-Za-z0-9._-]{1,64}$`. Drop a value that fails and name it in the reply.
 Do not invent a replacement. Set confidential only when asked.
 
+Type label. The instruction file from step 2 may hold
+`shippable-issue-bug-label: <label>` and
+`shippable-issue-feature-label: <label>`. Add the one that matches the kind
+from step 1, next to any label the requester named. It must pass the label
+check above. Skip both lines when the requester named a different project
+than the one that file belongs to. With no such line, add no type label.
+
 ### 8. Clean up and reply
 
 Remove the title and body files and, if you fetched one, the copy in the
@@ -248,12 +288,22 @@ Possible duplicates: <titles with doc paths, or none>
 found, say in the reply that no project context was found. Name any metadata
 value you dropped.
 
-## Project line convention
+## Project line conventions
 
 To let requesters skip naming the project, add one line to the instruction
 file: `shippable-issue-project: <host>/<path>`, for example
 `shippable-issue-project: gitlab.example.com/team/billing-export`. A project
 the requester names always wins over it.
+
+To put a type label on every issue of a kind, add either or both of these
+lines to the same file, for example:
+
+```
+shippable-issue-bug-label: type::bug
+shippable-issue-feature-label: type::feature
+```
+
+Each line holds one label. The skill never picks a type label on its own.
 
 ## References
 

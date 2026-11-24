@@ -25,6 +25,9 @@ cases:
     - evals/cases/table-name-hidden.yaml
     - evals/cases/title-literal.yaml
     - evals/cases/question-not-issue.yaml
+    - evals/cases/feature-why-proposed.yaml
+    - evals/cases/bug-environment-not-stated.yaml
+    - evals/cases/security-report-held.yaml
   defaults:
     timeout_seconds: 240
     max_turns: 16

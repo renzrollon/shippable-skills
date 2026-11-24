@@ -1,0 +1,22 @@
+# Fixture: scripts/fixtures/repo-full with shippable-issue-project set to gitlab.example.com/team/billing-export.
+# Assertion: A data exposure reported with create wording is not filed: no Issue created: line, and the fixed reason.
+id: security-report-held
+title: Possible security report is held back
+description: |
+  A data exposure reported with create wording is not filed: no Issue created: line, and the fixed reason.
+
+input:
+  prompt: |
+    create a gitlab issue: any signed-in user can open another customer's invoices by changing the number in the address
+
+expect:
+  must_not_contain:
+    - "Issue created:"
+
+judge:
+  type: rule_based
+  success:
+    - output_contains:
+        all:
+          - "## Issue draft"
+          - "Not created: possible security report"

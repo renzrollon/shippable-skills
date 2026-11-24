@@ -1,0 +1,19 @@
+# Fixture: scripts/fixtures/repo-full copied into the workspace.
+# Assertion: A feature draft has a Why section and the proposed acceptance criteria heading.
+id: feature-why-proposed
+title: Feature draft has Why and proposed criteria
+description: |
+  A feature draft has a Why section and the proposed acceptance criteria heading.
+
+input:
+  prompt: |
+    draft a gitlab issue: add a CSV option to the invoice export, finance cannot open the current file in their spreadsheet tool
+
+judge:
+  type: rule_based
+  success:
+    - output_contains:
+        all:
+          - "## Issue draft"
+          - "## Why"
+          - "## Acceptance criteria (proposed)"

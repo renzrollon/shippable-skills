@@ -6,9 +6,15 @@ Share this skill as the folder that holds its human README: [`skills/productivit
 
 `gitlab-issue` turns a one-line request into one GitLab issue. It reads the
 project's OpenSpec capabilities and docs, then writes a body a product owner
-can read: summary, who is affected, steps or current behaviour, expected
-behaviour, acceptance criteria, and related items. Developer detail goes last in
-a collapsed `<details>` block.
+can read. A feature has a summary, the reason, who is affected, today's
+behaviour, the wanted behaviour, proposed acceptance criteria, and related
+items. A bug swaps the middle for the environment, steps, expected and actual.
+Developer detail and any long pasted log go last in collapsed `<details>`
+blocks.
+
+It does not fill a gap with a guess. A reason, a role, or an environment the
+request did not give reads `Not stated`, and the body lists open questions for
+whoever triages the issue.
 
 Every capability name, change name, and path comes from what the helper scripts
 printed in that run. A request that matches nothing gets no invented citation.
@@ -24,7 +30,7 @@ on GitLab", "log a bug", "draft an issue".
 | Situation | Why this skill |
 | --- | --- |
 | A tester reports a bug in chat | A titled `Bug: ` issue with the matching capability named |
-| A product owner wants a feature logged | Acceptance criteria as checkboxes, plus overlapping changes |
+| A product owner wants a feature logged | Proposed acceptance criteria as checkboxes, plus overlapping changes |
 | You want to review wording first | Say "draft" or "preview" and nothing is created |
 
 Skip it for a passing "we should track this" and for questions about existing
@@ -54,6 +60,29 @@ Above the `<details>` block there are no file paths, routes, table or column
 names, or code taken from the repo. A Purpose line that names a table is
 paraphrased. Requester-supplied text stays exactly as given.
 
+**Why does the heading say "Acceptance criteria (proposed)"?**
+The skill drafts the criteria from a short request, so nobody has agreed them
+yet. A feature gets one for the change and one for an edge case or something
+that must stay the same. A bug gets one for the fix and one for a neighbouring
+case that must still work. Choices the request did not settle are asked under
+`Open questions`.
+
+**What does `Not stated` mean?**
+The request and the project context did not say. `Why`, `Who is affected`, and
+the two `Environment` lines use it. The skill does not make up a reason or work
+out an environment from a URL.
+
+**How do I get a type label on every bug or feature?**
+Add `shippable-issue-bug-label: type::bug` or
+`shippable-issue-feature-label: type::feature` to the instruction file, with
+your own label names. Without a line the skill adds no label you did not name.
+
+**What happens when I report a security problem?**
+A request that describes a vulnerability or a data exposure is not filed unless
+you ask for a confidential issue. You get the draft with
+`Not created: possible security report`. Ask again with the word "confidential"
+to file it.
+
 **Which tools does it create with?**
 A GitLab issue tool the host provides, first. If none exists, `glab`. If a host
 tool errors, it ends on the draft and never falls through to `glab`, because a
@@ -71,6 +100,11 @@ Manual checks:
 - A creation through a host tool works and returns the issue URL.
 - A host-tool error ends on `## Issue draft` with that error after `Not created:`.
 - The `<details>` block renders collapsed in GitLab.
+- A feature issue has a `Why` section, and it reads `Not stated` when you gave
+  no reason.
+- A bug issue has an `Environment` section, and a pasted stack trace sits in a
+  collapsed `Logs` block.
+- The technical notes open with `Context read at` and the commit.
 - Nothing new appears in the checkout afterwards (`git status` is unchanged).
 
 ## Migration plan

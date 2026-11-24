@@ -10,6 +10,7 @@ draft an issue for bulk refunds
 
 - **Grounded.** Capability names, changes, and paths come from the project's own files, never invented.
 - **Readable first.** Product owners read the top. Technical notes sit in a collapsed `<details>` block.
+- **Shows its gaps.** Anything the request left out reads `Not stated`, the criteria are marked proposed, and open questions are listed for whoever triages.
 - **Safe to run.** No tokens handled, no files written into your checkout, and wording like "draft" creates nothing.
 - **Creates where it can.** A host issue tool first, then `glab`, else it hands back the draft.
 

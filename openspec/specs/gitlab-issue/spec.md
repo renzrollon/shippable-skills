@@ -183,18 +183,24 @@ Text read from the project (Purpose, Why, titles, glossary) SHALL be treated as 
 
 ### Requirement: Plain-language body first
 The issue body SHALL open with plain-language sections a product owner or QA tester can act on:
-- for a feature or change: Summary, Who is affected, Today, Wanted, Acceptance criteria;
-- for a bug: Summary, Who is affected, Steps to reproduce, Expected, Actual, Acceptance criteria.
+- for a feature or change: Summary, Why, Who is affected, Today, Wanted, Acceptance criteria;
+- for a bug: Summary, Who is affected, Environment, Steps to reproduce, Expected, Actual, Acceptance criteria.
 
-Content the skill adds from the repo MUST NOT put file paths, routes, table or column names, environment variable names, or code in these sections. Requester-supplied steps, URLs, and paths SHALL be kept as given.
+Content added from the repo MUST NOT put file paths, routes, table or column names, environment variable names, or code there.
 
 #### Scenario: Technical Purpose paraphrased
 - **WHEN** the matched capability's Purpose names a database table
 - **THEN** the Today section describes the behaviour in plain words without the table name
 
+### Requirement: Requester text kept as given
+Requester-supplied steps, URLs, paths, and error text SHALL be kept as given, even where they look technical.
+
 #### Scenario: Requester gives a page URL
 - **WHEN** a bug request's steps include the page URL the tester used
 - **THEN** Steps to reproduce keeps that URL as written
+
+### Requirement: Gaps read Not stated
+The skill MUST NOT fill a section with a guess. Why SHALL hold only a reason the request gives. Environment SHALL hold a `Seen in` line and a `Worked before` line, each taken only from the request. Why, Who is affected, and each Environment line SHALL read `Not stated` when nothing is given.
 
 #### Scenario: Unknown reproduction steps
 - **WHEN** a bug request gives no steps
@@ -204,8 +210,20 @@ Content the skill adds from the repo MUST NOT put file paths, routes, table or c
 - **WHEN** the index has no personas and the request names no role
 - **THEN** Who is affected reads `Not stated`
 
+#### Scenario: Feature with a reason
+- **WHEN** a feature request reads "let admins export only the filtered invoices, month-end checks take too long with the full file"
+- **THEN** Why states that month-end checks take too long, and Summary is one sentence about the export
+
+#### Scenario: Feature with no reason
+- **WHEN** a feature request gives no reason
+- **THEN** Why reads `Not stated` and no reason is made up
+
+#### Scenario: Bug with no environment
+- **WHEN** a bug request says nothing about where it was seen or whether it worked before
+- **THEN** both Environment lines read `Not stated`, even when the steps hold a URL
+
 ### Requirement: Acceptance criteria as checkboxes
-Acceptance criteria SHALL be Markdown checkboxes phrased as plain WHEN and THEN statements. When an outline scenario covers behaviour a feature request changes, Today SHALL name it and its capability. For a bug that contradicts an outline scenario, Expected SHALL name it.
+Acceptance criteria SHALL be Markdown checkboxes phrased as plain WHEN and THEN statements, under the heading `Acceptance criteria (proposed)`, because the skill drafts them and nobody has agreed them. When an outline scenario covers behaviour a feature request changes, Today SHALL name it and its capability. For a bug that contradicts an outline scenario, Expected SHALL name it.
 
 #### Scenario: Request changes existing behaviour
 - **WHEN** the outline shows a scenario covering what a feature request wants to change
@@ -215,8 +233,34 @@ Acceptance criteria SHALL be Markdown checkboxes phrased as plain WHEN and THEN 
 - **WHEN** a bug request describes behaviour that an outline scenario specifies differently
 - **THEN** Expected names the specified behaviour and its capability
 
+#### Scenario: Heading marks the draft
+- **WHEN** any issue body is written
+- **THEN** the criteria heading reads `Acceptance criteria (proposed)`
+
+### Requirement: Criteria cover a second case
+There SHALL be at least two acceptance criteria. A feature SHALL have one for the new behaviour and one for an edge case or a behaviour that must stay the same. A bug SHALL have one for the fixed behaviour and one for a neighbouring case that must still work.
+
+#### Scenario: Feature keeps an unchanged case
+- **WHEN** a feature request asks for the export to follow the filters on screen
+- **THEN** one checkbox states the filtered export and another states what happens with no filter
+
+#### Scenario: Bug criteria go past Expected
+- **WHEN** a bug issue is written
+- **THEN** one checkbox states the fixed behaviour and another states a neighbouring case that must still work
+
+### Requirement: Open questions listed
+When the request leaves a gap someone must close before work starts, the body SHALL carry an Open questions section after the acceptance criteria, as Markdown checkboxes. It SHALL ask for the reason when Why reads `Not stated`, for the steps when a bug has none, for the environment when an Environment line reads `Not stated`, and about each choice in the criteria that the request does not settle. It MUST NOT answer its own questions. With no gap, the section SHALL be left out.
+
+#### Scenario: Bug with no steps and no environment
+- **WHEN** a bug request gives no steps and no environment
+- **THEN** Open questions asks for the steps and asks where it was seen and whether it worked before
+
+#### Scenario: Nothing left open
+- **WHEN** the request gives the reason and the criteria state only what the request says
+- **THEN** the body has no Open questions section
+
 ### Requirement: Related list
-After the plain-language sections the body SHALL carry a Related section listing the matched capability names, any active change that overlaps the request, and any known-issue or backlog title that may be a duplicate. A possible duplicate MUST NOT stop the issue being created.
+After the plain-language sections the body SHALL carry a Related section listing the matched capability names, any active change that overlaps the request, and any known-issue or backlog title that may be a duplicate. A possible duplicate MUST NOT stop the issue being created. With context and no match, Related SHALL read `None found`. With no context, it SHALL read `Not checked (no project context)`.
 
 #### Scenario: Overlapping in-flight change
 - **WHEN** an active change name or Why overlaps the request
@@ -226,12 +270,35 @@ After the plain-language sections the body SHALL carry a Related section listing
 - **WHEN** a known-issue title describes the same symptom
 - **THEN** Related lists that title with its doc path, and the reply's possible-duplicates line repeats it
 
+#### Scenario: Context with no match
+- **WHEN** the index was read and nothing in it matches the request
+- **THEN** Related reads `None found`
+
+#### Scenario: No context to check
+- **WHEN** no project context was found
+- **THEN** Related reads `Not checked (no project context)`
+
 ### Requirement: Collapsed technical notes
-Technical detail SHALL go last, inside a `<details>` block whose summary reads `Technical notes (for developers)`. It holds requirement titles and repo-relative spec and docs paths in backticks. It MUST NOT hold code, invented file names, or web links built from a guessed branch.
+Technical detail SHALL go last, inside a `<details>` block whose summary reads `Technical notes (for developers)`. Its first line SHALL name the commit the context was read at. After that it holds requirement titles and repo-relative spec and docs paths in backticks. It MUST NOT hold code, invented file names, or web links built from a guessed branch. With no context the block SHALL be left out.
 
 #### Scenario: Matched capability
 - **WHEN** the issue cites a capability
 - **THEN** its spec path and the relevant requirement titles appear only inside the collapsed block
+
+#### Scenario: Commit recorded
+- **WHEN** the context came from a local checkout at commit `3f2a91c`
+- **THEN** the first line of the technical notes reads `Context read at` followed by that commit
+
+### Requirement: Pasted logs collapsed
+When a bug request carries pasted output longer than five lines, such as log lines, a stack trace, or console output, the body SHALL hold it unchanged in a fenced block inside a `<details>` block whose summary reads `Logs`, placed before the technical notes. Error text of five lines or fewer SHALL stay under Actual as given. With no such output, the body MUST NOT have a Logs block.
+
+#### Scenario: Stack trace pasted
+- **WHEN** a bug request includes a twenty-line stack trace
+- **THEN** the trace appears unchanged inside the collapsed Logs block and Actual says a log is attached
+
+#### Scenario: One-line error
+- **WHEN** a bug request quotes a one-line error message
+- **THEN** the message stays under Actual exactly as given and there is no Logs block
 
 ### Requirement: Requester text never reaches a shell unquoted
 The skill MUST pass the title and body to any shell command only through temporary files. Label, assignee, milestone, project, host, and branch values SHALL be checked against fixed character patterns before use. A failing value SHALL be dropped and named in the reply.
@@ -267,15 +334,37 @@ When the requester asks to draft, preview, or write up an issue without filing i
 - **THEN** the reply carries the draft and no issue is created
 
 ### Requirement: Metadata only when named
-The skill SHALL set labels, assignee, milestone, or confidentiality only when the requester names them, and MUST NOT add an authorship footer to the body.
+The skill SHALL set labels, assignee, milestone, or confidentiality only when the requester names them, and MUST NOT add an authorship footer to the body. A project type label is the one exception.
 
 #### Scenario: Labels named
 - **WHEN** the request says "label it frontend"
 - **THEN** the created issue carries the `frontend` label and no other
 
 #### Scenario: Nothing named
-- **WHEN** the request names no metadata
+- **WHEN** the request names no metadata and the instruction file has no type label line
 - **THEN** the issue is created with no labels, assignee, or milestone
+
+### Requirement: Project type label
+When the instruction file holds a `shippable-issue-bug-label: <label>` or `shippable-issue-feature-label: <label>` line, the skill SHALL add that label to an issue of that kind, after the same character check as any other label. It SHALL skip both lines when the requester names a different project than the one that file belongs to.
+
+#### Scenario: Project sets a bug label
+- **WHEN** the instruction file holds `shippable-issue-bug-label: type::bug` and the request is a bug that names no label
+- **THEN** the created issue carries the `type::bug` label and no other
+
+#### Scenario: Requester names another project
+- **WHEN** the instruction file holds a type label line and the requester names a different project
+- **THEN** no type label is added
+
+### Requirement: Possible security report held back
+When the request describes a vulnerability or a data exposure and the requester did not ask for a confidential issue, the skill MUST NOT create the issue and MUST NOT set confidentiality on its own. It SHALL return the draft with `Not created: possible security report` and say that asking again with the word "confidential" files it.
+
+#### Scenario: Exposure reported without confidential
+- **WHEN** the request reads "create a gitlab issue: any signed-in user can open another customer's invoices"
+- **THEN** nothing is created and the reply carries the draft with `Not created: possible security report`
+
+#### Scenario: Exposure reported as confidential
+- **WHEN** the same request also says "make it confidential"
+- **THEN** the issue is created with the confidential flag set
 
 ### Requirement: Fixed reply markers
 The reply SHALL end with these fixed lines:
