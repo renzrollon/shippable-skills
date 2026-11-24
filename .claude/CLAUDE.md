@@ -29,3 +29,14 @@ Keep `SKILL.md` under 500 lines. The description is human-facing for user-invoke
 This repo must stay host-neutral. Do not depend on a host plugin-root env var, a single plugin PATH, or one vendor's tool names. Discover skills from the common project and home directories; map host tool aliases when tallying.
 
 No em-dashes anywhere in this repo's prose (`SKILL.md` files, docs, `README.md`, `CLAUDE.md`, comments). Where a sentence reaches for one, rewrite it instead with a comma, colon, period, parentheses, or a conjunction.
+
+## Testing
+
+<!-- BEGIN interlock:testing -->
+**Unit:** `npm run validate` (cwd: `.`)
+**Filter:** none (plugin validation has no filter mode)
+**Single file:** none (plugin validation has no per-file mode)
+**E2E:** opt-in via /fix-tests --e2e (not configured)
+**Prerequisites:** `claude` CLI on PATH
+**Profile:** `.claude/testing/profile.json` (managed by `/interlock:fix-tests`)
+<!-- END interlock:testing -->

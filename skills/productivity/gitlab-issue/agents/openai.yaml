@@ -1,0 +1,3 @@
+interface:
+  display_name: "GitLab issue"
+  short_description: "Turn a one-line request into a GitLab issue grounded in the project's OpenSpec and docs"

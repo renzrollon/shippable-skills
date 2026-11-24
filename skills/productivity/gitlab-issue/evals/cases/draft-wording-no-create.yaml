@@ -1,0 +1,21 @@
+# Fixture: scripts/fixtures/repo-full with shippable-issue-project set to gitlab.example.com/team/billing-export.
+# Assertion: Draft wording makes no creation attempt: no Issue created: line, a Not created: line instead.
+id: draft-wording-no-create
+title: Draft wording creates nothing
+description: |
+  Draft wording makes no creation attempt: no Issue created: line, a Not created: line instead.
+
+input:
+  prompt: |
+    write up a draft issue for adding bulk refunds
+
+expect:
+  must_not_contain:
+    - "Issue created:"
+
+judge:
+  type: rule_based
+  success:
+    - output_contains:
+        all:
+          - "Not created:"

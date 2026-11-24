@@ -1,6 +1,6 @@
 # Contributing
 
-This repo is a skills collection. Promoted skills live in `engineering/` and `productivity/`. Conventions for buckets, docs pages, and invocation polarity are in [CLAUDE.md](./CLAUDE.md).
+This repo is a skills collection. Promoted skills live in `engineering/` and `productivity/`. Conventions for buckets, docs pages, and invocation polarity are in [.claude/CLAUDE.md](./.claude/CLAUDE.md).
 
 ## Develop
 

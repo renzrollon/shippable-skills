@@ -11,3 +11,4 @@ Daily non-code workflow tools.
 **Model-invoked**
 
 - **[session-primer](./session-primer/)**: Brief a fresh session in one read-only pass, from git state, open plan checkboxes, the newest handoff file, and the instruction file.
+- **[gitlab-issue](./gitlab-issue/)**: Turn a one-line request into a GitLab issue that carries the project's own OpenSpec and docs context, written in plain language with technical notes collapsed at the end.

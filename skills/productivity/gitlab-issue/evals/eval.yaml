@@ -1,0 +1,33 @@
+schema_version: v1alpha1
+
+# gitlab-issue is model-invoked. Prompts are natural language that should
+# trigger it; the question case must not produce a draft or a created issue.
+#
+# The workspace must sit outside any git repo: the cases build fixture trees
+# and the skill reads git state, so a surrounding repo would leak into them.
+
+environment:
+  type: none
+
+skills:
+  - source: local_path
+    path: .
+
+engine:
+  name: claude_code
+
+cases:
+  files:
+    - evals/cases/bug-draft-shape.yaml
+    - evals/cases/ticket-key-first-line.yaml
+    - evals/cases/no-context.yaml
+    - evals/cases/draft-wording-no-create.yaml
+    - evals/cases/table-name-hidden.yaml
+    - evals/cases/title-literal.yaml
+    - evals/cases/question-not-issue.yaml
+  defaults:
+    timeout_seconds: 240
+    max_turns: 16
+
+report:
+  formats: [json]

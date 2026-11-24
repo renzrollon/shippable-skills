@@ -22,6 +22,9 @@
     "explore",
     "session-handoff",
     "session-primer",
+    "gitlab",
+    "issue",
+    "openspec",
     "release",
     "testing",
     "engineering"
@@ -33,6 +36,7 @@
     "./skills/productivity/session-retro",
     "./skills/productivity/product-spine",
     "./skills/productivity/session-handoff",
-    "./skills/productivity/session-primer"
+    "./skills/productivity/session-primer",
+    "./skills/productivity/gitlab-issue"
   ]
 }

@@ -1,0 +1,4 @@
+schema: spec-driven
+context: |
+  Tech stack: web app.
+  Domain: Billing exports for small teams, covering invoices, CSV downloads and reminders.

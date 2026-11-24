@@ -1,0 +1,17 @@
+# Fixture: scripts/fixtures/repo-full copied into the workspace.
+# Assertion: A requested title containing $(whoami) appears literally in the draft.
+id: title-literal
+title: Shell syntax in title stays literal
+description: |
+  A requested title containing $(whoami) appears literally in the draft.
+
+input:
+  prompt: |
+    draft an issue titled exactly: Rename $(whoami) field
+
+judge:
+  type: rule_based
+  success:
+    - output_contains:
+        all:
+          - "$(whoami)"

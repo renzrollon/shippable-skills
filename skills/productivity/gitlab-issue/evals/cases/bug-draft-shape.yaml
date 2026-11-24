@@ -1,0 +1,19 @@
+# Fixture: scripts/fixtures/repo-full copied into the workspace; no project named.
+# Assertion: A bug draft ends with an Issue draft heading, a Bug: title and a Not created: line.
+id: bug-draft-shape
+title: Bug draft shape
+description: |
+  A bug draft ends with an Issue draft heading, a Bug: title and a Not created: line.
+
+input:
+  prompt: |
+    draft a bug issue: invoice export times out on large invoices. Preview only.
+
+judge:
+  type: rule_based
+  success:
+    - output_contains:
+        all:
+          - "## Issue draft"
+          - "Bug: "
+          - "Not created:"

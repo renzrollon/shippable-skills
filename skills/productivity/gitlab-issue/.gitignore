@@ -1,0 +1,4 @@
+*-workspace/
+.skillgantry-workspace/
+.skillgantry-workspace-*/
+.skillspector-baseline.yaml

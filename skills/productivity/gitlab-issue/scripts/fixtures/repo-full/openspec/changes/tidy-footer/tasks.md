@@ -1,0 +1,1 @@
+- [ ] 1.1 Tidy the footer.

@@ -12,11 +12,8 @@ node_modules/
 
 # Agent runtime (never commit generated session state)
 .agents/
-.claude/handoff/
-.claude/settings.local.json
-.claude/graph/
-.claude/skills/
-.claude/worktrees/
+.claude/*
+!.claude/CLAUDE.md
 
 # Backups
 *.bak
