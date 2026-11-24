@@ -10,7 +10,7 @@
       "name": "shippable-skills",
       "source": "./",
       "description": "Release bumps, test repair, codebase exploration, session handoff and primer, session retro, and product spine. Plug-and-play across coding agents.",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "category": "productivity",
       "author": {
         "name": "Carl Rollon"
