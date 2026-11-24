@@ -1,0 +1,18 @@
+# Fixture: an empty directory: no openspec/, no docs/, no project.
+# Assertion: A tree with no openspec/ or docs/ gives Context from: none and Context used: none.
+id: no-context
+title: No context found
+description: |
+  A tree with no openspec/ or docs/ gives Context from: none and Context used: none.
+
+input:
+  prompt: |
+    draft a gitlab issue: the dashboard loads slowly
+
+judge:
+  type: rule_based
+  success:
+    - output_contains:
+        all:
+          - "Context from: none"
+          - "Context used: none"

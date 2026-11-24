@@ -8,7 +8,7 @@
 npx skills add renzrollon/shippable-skills
 ```
 
-Then type `/session-retro` to score this conversation, `/product-spine` to act as product owner for your repo, `/bump-release` to bump every manifest version at once, or `/session-handoff` to save where a session stands before a reset. `fix-tests`, `explore`, and `session-primer` are model-invoked: the agent reaches for them when the task fits.
+Then type `/session-retro` to score this conversation, `/product-spine` to act as product owner for your repo, `/bump-release` to bump every manifest version at once, or `/session-handoff` to save where a session stands before a reset. `fix-tests`, `explore`, `session-primer`, and `gitlab-issue` are model-invoked: the agent reaches for them when the task fits.
 
 - **The lead skill retros the live session.** [session-retro](./skills/productivity/session-retro/) scores the conversation you are still in and folds repeatable steps back into the skills you called.
 - **Install the folder, keep the files.** You keep ordinary skill files in your project or home directory, so the next lesson stays. Updates later: `npx skills update`.
@@ -47,7 +47,7 @@ The host copies the skill folder. You invoke the skill. The model follows `SKILL
 
 You type `/session-retro`, `/product-spine`, `/bump-release`, or `/session-handoff`. The agent will not start any of them in the middle of your work.
 
-The model-invoked skills have no command to type. [fix-tests](./skills/engineering/fix-tests/) loads when tests are failing, [explore](./skills/engineering/explore/) when a question spans several subsystems, and [session-primer](./skills/productivity/session-primer/) at session start or on "where was I". You can still ask for any of them by name.
+The model-invoked skills have no command to type. [fix-tests](./skills/engineering/fix-tests/) loads when tests are failing, [explore](./skills/engineering/explore/) when a question spans several subsystems, [session-primer](./skills/productivity/session-primer/) at session start or on "where was I", and [gitlab-issue](./skills/productivity/gitlab-issue/) when you ask to file a GitLab issue. You can still ask for any of them by name.
 
 ## Why product-spine
 
@@ -83,11 +83,11 @@ The [skills](https://github.com/vercel-labs/skills) CLI is the installer, not a 
 
 ## Status
 
-`session-retro`, `product-spine`, `bump-release`, `fix-tests`, `explore`, `session-handoff`, and `session-primer` are the promoted skills. Beta work stays in `skills/in-progress/` and is not in the plugin. The package on npm is not published; install from GitHub via `npx skills add`.
+`session-retro`, `product-spine`, `bump-release`, `fix-tests`, `explore`, `session-handoff`, `session-primer`, and `gitlab-issue` are the promoted skills. Beta work stays in `skills/in-progress/` and is not in the plugin. The package on npm is not published; install from GitHub via `npx skills add`.
 
 Dated gate results for `session-retro` 0.1.0 (21 Aug 2026) are in its [changelog](./skills/productivity/session-retro/CHANGELOG.md).
 
-`product-spine` **0.3.0** has not been through this gate yet. That run is the next release step. `bump-release`, `fix-tests`, `explore`, `session-handoff`, and `session-primer` (all 0.1.0) have not been through it either.
+`product-spine` **0.3.0** has not been through this gate yet. That run is the next release step. `bump-release`, `fix-tests`, `explore`, `session-handoff`, `session-primer`, and `gitlab-issue` (all 0.1.0) have not been through it either.
 
 ## Conventions
 
@@ -97,6 +97,7 @@ Skills that share state agree on a few paths and shapes. Each skill restates the
 - **Path overrides.** Put `shippable-state-dir: <path>` or `shippable-handoff-dir: <path>` on a line in the instruction file, with the path relative to the repo root. A `--state-dir <path>` or `--handoff-dir <path>` argument, or a directory you name in the request, wins over the file. A path from the file must stay inside the repo: an absolute path or one containing `..` is ignored.
 - **State directory.** Your path, else the instruction-file override, else `.claude/` when it exists, else `.agents/`.
 - **Handoff directory.** Your path, else the instruction-file override, else the first existing of `.claude/handoff/`, `.agents/handoff/`, `docs/handoff/`. Readers scan every existing one. When none exists, writers create `.agents/handoff/` and advise a gitignore line. If the write is denied, the writer does not retry and puts the content in its reply. Files are named `<kind>-<slug>-<YYYYMMDD-HHMMSS>.md`, where kind is `handoff`, `explore`, `grill`, `wire-in`, or `skill-candidate`. `grill` is reserved for a later skill.
+- **Issue project.** Put `shippable-issue-project: <host>/<path>` on a line in the instruction file to name the GitLab project for skills that file issues, such as [gitlab-issue](./skills/productivity/gitlab-issue/). A project the requester names wins over the file.
 - **Check profile.** How a project runs its tests, typecheck, lint, and build lives in a managed block fenced `<!-- BEGIN shippable:checks -->` and `<!-- END shippable:checks -->` in the instruction file, created in `AGENTS.md` when none exists. The block is authoritative. An optional cache at `<state-dir>/testing/profile.json` mirrors it, and when the two disagree the block wins.
 - **Brief files.** An explore brief carries the headings Meta, Problem / Intent, Codebase Findings, Critical Files, Options Considered, Recommended Direction, Assumptions Made, Pending Clarifications, Risks / Gaps. A handoff document carries the sections named in [session-handoff](./skills/productivity/session-handoff/). A skill that reads either picks the newest matching file, takes what it records as settled, and re-checks anything the repo may have changed since.
 
@@ -126,6 +127,7 @@ These split on one axis: who can invoke them. **User-invoked** skills are reacha
 **Model-invoked**
 
 - **[session-primer](./skills/productivity/session-primer/)**: Brief a fresh session in one read-only pass, from git state, open plan checkboxes, the newest handoff file, and the instruction file. Never edits anything.
+- **[gitlab-issue](./skills/productivity/gitlab-issue/)**: Turn a one-line request into a GitLab issue that carries the project's own OpenSpec and docs context, written in plain language with technical notes collapsed at the end.
 
 ## Docs
 
@@ -145,8 +147,10 @@ These split on one axis: who can invoke them. **User-invoked** skills are reacha
 | [session-handoff docs](./docs/productivity/session-handoff.md) | When to reach for it, questions, what working looks like |
 | [session-primer](./skills/productivity/session-primer/) | Human README. The URL to share |
 | [session-primer docs](./docs/productivity/session-primer.md) | When to reach for it, questions, what working looks like |
+| [gitlab-issue](./skills/productivity/gitlab-issue/) | Human README. The URL to share |
+| [gitlab-issue docs](./docs/productivity/gitlab-issue.md) | When to reach for it, questions, what working looks like |
 | [CONTRIBUTING.md](./CONTRIBUTING.md) | Dev commands, release gate, SkillSpector suppress |
-| [CLAUDE.md](./CLAUDE.md) | Bucket rules, invocation polarity, docs contract |
+| [.claude/CLAUDE.md](./.claude/CLAUDE.md) | Bucket rules, invocation polarity, docs contract |
 
 ## Development
 

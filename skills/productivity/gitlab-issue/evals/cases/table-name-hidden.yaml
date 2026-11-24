@@ -1,0 +1,18 @@
+# Fixture: a fixture tree whose capability Purpose names a table (invoice_export_jobs).
+# Assertion: The table name appears in no section above the details block.
+id: table-name-hidden
+title: Table name stays below the fold
+description: |
+  The table name appears in no section above the details block.
+
+input:
+  prompt: |
+    draft a gitlab issue: export jobs never finish
+
+judge:
+  type: rule_based
+  success:
+    - output_contains:
+        all:
+          - "## Issue draft"
+          - "<details>"

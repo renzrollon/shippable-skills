@@ -1,0 +1,23 @@
+# Fixture: no fixture needed.
+# Assertion: 'what issues are open?' prints neither Issue draft nor Issue created:.
+id: question-not-issue
+title: Question is not an issue request
+description: |
+  'what issues are open?' prints neither Issue draft nor Issue created:.
+
+input:
+  prompt: |
+    what issues are open?
+
+expect:
+  must_not_contain:
+    - "## Issue draft"
+    - "Issue created:"
+
+judge:
+  type: rule_based
+  failure:
+    - output_contains:
+        any:
+          - "## Issue draft"
+          - "Issue created:"
