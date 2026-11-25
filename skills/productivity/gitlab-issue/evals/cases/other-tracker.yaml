@@ -1,0 +1,30 @@
+id: other-tracker
+title: A GitHub issue ask does not run the skill
+description: |
+  A request for a GitHub issue is for another tracker. The GitLab skill's
+  reply lines do not appear. No remote is set, so nothing can be filed
+  anywhere.
+
+context:
+  repo_fixture: scripts/fixtures/repo-full
+  git:
+    init: true
+
+input:
+  prompt: |
+    draft a GitHub issue for the CSV export timing out on large invoices
+
+expect:
+  must_not_contain:
+    - "Issue created:"
+    - "Context used:"
+    - "Possible duplicates:"
+
+judge:
+  type: rule_based
+  failure:
+    - output_contains:
+        any:
+          - "Issue created:"
+          - "Context used:"
+          - "Possible duplicates:"

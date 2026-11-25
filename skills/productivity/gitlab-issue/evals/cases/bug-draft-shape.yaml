@@ -1,13 +1,24 @@
-# Fixture: scripts/fixtures/repo-full copied into the workspace; no project named.
-# Assertion: A bug draft ends with an Issue draft heading, a Bug: title and a Not created: line.
 id: bug-draft-shape
 title: Bug draft shape
 description: |
-  A bug draft ends with an Issue draft heading, a Bug: title and a Not created: line.
+  A bug draft from a checkout of the project ends on an Issue draft heading,
+  a Bug: title, the draft reason, and cites the export capability it read.
+
+context:
+  repo_fixture: scripts/fixtures/repo-full
+  git:
+    init: true
+    remotes:
+      - name: origin
+        url: https://gitlab.example.com/team/billing-export.git
 
 input:
   prompt: |
     draft a bug issue: invoice export times out on large invoices. Preview only.
+
+expect:
+  must_not_contain:
+    - "Issue created:"
 
 judge:
   type: rule_based
@@ -16,4 +27,7 @@ judge:
         all:
           - "## Issue draft"
           - "Bug: "
-          - "Not created:"
+          - "## Steps to reproduce"
+          - "Not created: draft requested"
+          - "Context from: local checkout"
+          - "csv-export"

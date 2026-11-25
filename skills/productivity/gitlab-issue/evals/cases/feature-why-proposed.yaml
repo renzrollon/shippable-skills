@@ -1,13 +1,25 @@
-# Fixture: scripts/fixtures/repo-full copied into the workspace.
-# Assertion: A feature draft has a Why section and the proposed acceptance criteria heading.
 id: feature-why-proposed
 title: Feature draft has Why and proposed criteria
 description: |
-  A feature draft has a Why section and the proposed acceptance criteria heading.
+  A feature draft carries the reason under Why, at least one WHEN/THEN
+  checkbox under the proposed criteria heading, and cites the export
+  capability it read.
+
+context:
+  repo_fixture: scripts/fixtures/repo-full
+  git:
+    init: true
+    remotes:
+      - name: origin
+        url: https://gitlab.example.com/team/billing-export.git
 
 input:
   prompt: |
-    draft a gitlab issue: add a CSV option to the invoice export, finance cannot open the current file in their spreadsheet tool
+    write up a gitlab issue, do not file it yet: add a CSV option to the invoice export, finance cannot open the current file in their spreadsheet tool
+
+expect:
+  must_not_contain:
+    - "Issue created:"
 
 judge:
   type: rule_based
@@ -17,3 +29,6 @@ judge:
           - "## Issue draft"
           - "## Why"
           - "## Acceptance criteria (proposed)"
+          - "- [ ] WHEN"
+          - "Not created: draft requested"
+          - "csv-export"

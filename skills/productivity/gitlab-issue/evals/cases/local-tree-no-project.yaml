@@ -1,0 +1,30 @@
+id: local-tree-no-project
+title: A local tree with no project still gives context
+description: |
+  The checkout has openspec/ but no remote and no project line, so no project
+  resolves. The draft still cites the matching capability from the local
+  tree, nothing is fetched or created, and the reason is no target project.
+
+context:
+  repo_fixture: scripts/fixtures/repo-full
+  git:
+    init: true
+
+input:
+  prompt: |
+    create a gitlab issue: billing admins want to sort the invoice list by amount
+
+expect:
+  must_not_contain:
+    - "Issue created:"
+    - "fresh copy"
+
+judge:
+  type: rule_based
+  success:
+    - output_contains:
+        all:
+          - "## Issue draft"
+          - "Not created: no target project"
+          - "Context from: local checkout"
+          - "invoice-list"

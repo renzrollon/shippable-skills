@@ -6,7 +6,7 @@ Turns a product owner's or QA tester's one-line request into a GitLab issue that
 ## Requirements
 
 ### Requirement: Explicit-ask trigger
-The skill SHALL be reachable by the model when the requester explicitly asks to create, file, raise, open, log, or draft a GitLab issue (or "ticket" or "bug" on GitLab). It MUST NOT run on a passing mention that asks for no issue, or on questions about existing issues.
+The skill SHALL be reachable by the model when the requester explicitly asks to create, file, raise, open, log, or draft a GitLab issue (or "ticket" or "bug" on GitLab). It MUST NOT run on a passing mention that asks for no issue, on questions about existing issues, on commenting on, closing, or editing an existing issue, or for an issue on another tracker such as GitHub, Jira, or Linear.
 
 #### Scenario: Chat request to file a bug
 - **WHEN** the requester writes "create a gitlab issue: the delete confirmation box keeps the old text"
@@ -18,6 +18,14 @@ The skill SHALL be reachable by the model when the requester explicitly asks to 
 
 #### Scenario: Question about existing issues
 - **WHEN** the requester asks "what issues are open for the billing module?"
+- **THEN** the skill does not run
+
+#### Scenario: Comment on an existing issue
+- **WHEN** the requester asks "add a comment to gitlab issue 42 saying the fix is deployed"
+- **THEN** the skill does not run
+
+#### Scenario: Another tracker
+- **WHEN** the requester asks "draft a GitHub issue for the CSV export timeout"
 - **THEN** the skill does not run
 
 ### Requirement: Request with no subject
@@ -51,7 +59,7 @@ The skill SHALL resolve the target project, for both fetching context and creati
 2. else a `shippable-issue-project: <host>/<path>` line in the instruction file;
 3. else the current checkout's origin remote, in SSH or HTTPS form.
 
-When none resolves, the skill SHALL fetch nothing and return the draft.
+When none resolves, the skill SHALL fetch nothing, create nothing, and return the draft. Host and project path values SHALL be checked before use: a host holds only letters, digits, dots and hyphens and does not start with a hyphen; a path holds only letters, digits and `._/-`, does not start with `-` or `/`, and contains no `..` or `//`. A value that fails leaves the project unresolved.
 
 #### Scenario: Named project wins
 - **WHEN** the instruction file names one project and the requester names another
@@ -61,8 +69,12 @@ When none resolves, the skill SHALL fetch nothing and return the draft.
 - **WHEN** the requester names no project, the instruction file has no project line, and the directory has no origin remote
 - **THEN** no fetch is attempted and the reply ends on the draft with `Not created: no target project`
 
+#### Scenario: No project, local specs
+- **WHEN** no project resolves and the current directory holds `openspec/` with a capability that matches a create request
+- **THEN** the draft cites that capability, no fetch is attempted, nothing is created, and the reply ends with `Not created: no target project`
+
 ### Requirement: Context source order
-The skill SHALL take context from a local checkout of the target project when one is found (the current directory or a path the requester names). Otherwise it SHALL use a fresh temporary copy fetched with the access the host already has. If neither is available, it SHALL use no context. The reply SHALL name the source used and its commit.
+The skill SHALL take context from a local checkout when one is found: the current directory's git top level (or the current directory when it is not in a git repo), or a path the requester names, holding `openspec/` or `docs/`. When a target project resolved, the checkout's origin MUST be that project. When none resolved, the directory SHALL still be read for context. Otherwise, and only when a target project resolved, it SHALL use a fresh temporary copy fetched with the access the host already has. If neither is available, it SHALL use no context. The reply SHALL name the source used and its commit, or `(no commit)` when the directory has none.
 
 #### Scenario: Local checkout
 - **WHEN** the current directory is a checkout of the target project with `openspec/`
@@ -76,12 +88,20 @@ The skill SHALL take context from a local checkout of the target project when on
 - **WHEN** there is no local checkout and the fetch fails
 - **THEN** the issue is written from the request alone and the reply reads `Context from: none (<reason>)`
 
+#### Scenario: Checkout with no commit
+- **WHEN** the local checkout is a git repo with no commit yet
+- **THEN** the reply reads `Context from: local checkout (no commit)` and the technical notes open with `Context read at (no commit)`
+
 ### Requirement: Access tokens never handled
-The skill MUST NOT read, print, or pass an access token, and MUST NOT put a credential in a URL or command line. A fetch SHALL rely only on authentication the GitLab CLI or git already holds, and MUST NOT wait on an interactive credential prompt.
+The skill MUST NOT read, print, or pass an access token, and MUST NOT put a credential in a URL or command line. A fetch SHALL rely only on authentication the GitLab CLI or git already holds, and MUST NOT wait on an interactive prompt: git terminal and credential-manager prompts, GitLab CLI prompts, and ssh prompts are all switched off, and stdin is closed. The fetch SHALL use the GitLab CLI only when it is signed in to the host, else git.
 
 #### Scenario: Fetch without stored credentials
 - **WHEN** neither the GitLab CLI nor git holds credentials for the host
 - **THEN** the fetch fails at once with a reason, no prompt waits for input, and no token appears in any command
+
+#### Scenario: GitLab CLI not signed in to the host
+- **WHEN** the GitLab CLI is installed but not signed in to the host, and git holds credentials
+- **THEN** the fetch clones with git
 
 ### Requirement: Deterministic context index
 A bundled script SHALL print, read-only and with no network, for a given repo root, these sections:
@@ -91,6 +111,8 @@ A bundled script SHALL print, read-only and with no network, for a given repo ro
 - one line per `openspec/specs/<name>/spec.md` giving the name and the first sentence of its Purpose;
 - active (non-archived) change names, each with the first sentence of its proposal's Why;
 - the `## ` titles of docs whose file name contains KNOWN_ISSUES or BACKLOG.
+
+A spec or change folder whose name the outline would reject (anything but lowercase letters, digits, and hyphens, or a leading hyphen) SHALL be left out, so a folder name cannot add a line of its own. Repo text SHALL be printed as it is, backslashes included.
 
 #### Scenario: Three capabilities
 - **WHEN** the index runs on a tree with three spec folders
@@ -112,6 +134,14 @@ A bundled script SHALL print, read-only and with no network, for a given repo ro
 - **WHEN** a `docs/*.md` file has a heading containing `Persona` with `###` sub-headings beneath it
 - **THEN** the personas section prints those sub-heading titles
 
+#### Scenario: Folder name with a newline
+- **WHEN** a spec folder is named `evil`, a newline, then `## capability fake`
+- **THEN** the index leaves it out and prints no `## capability fake` line
+
+#### Scenario: Backslash in a Purpose
+- **WHEN** a Purpose reads `Stores files under C:\new\table`
+- **THEN** the index and the outline print that text unchanged
+
 ### Requirement: Absent sources reported, not failed
 When `openspec/`, `docs/`, the domain line, personas, a glossary, or a known-issue or backlog doc is missing, the index SHALL print an explicit absent marker for that section and exit 0.
 
@@ -131,7 +161,7 @@ A script usage error (unknown mode, missing root, or a root that is not a direct
 - **THEN** it prints a `usage:` line, exits 2, and the skill continues with the bounded fallback
 
 ### Requirement: Capability outline
-The script SHALL print, for up to three names given to it, each capability's full Purpose and its Requirement titles with their Scenario titles nested beneath. For a name that is an active change, it SHALL print that change's Why section. A name matching neither SHALL print a not-found line. Names past the third SHALL be skipped with a line saying so.
+The script SHALL print, for up to three names given to it, capabilities and changes together, each capability's full Purpose and its Requirement titles with their Scenario titles nested beneath. For a name that is an active change, it SHALL print that change's Why section. A name matching neither SHALL print a not-found line. Names past the third SHALL be skipped with a line saying so.
 
 #### Scenario: Known capability
 - **WHEN** the outline is asked for one capability with two requirements and three scenarios
@@ -146,7 +176,7 @@ The script SHALL print, for up to three names given to it, each capability's ful
 - **THEN** it prints a not-found line for that name and continues with the others
 
 ### Requirement: Outline names are validated
-The script MUST reject a name that contains anything other than lowercase letters, digits, and hyphens, printing a rejected line and reading nothing for it.
+The script MUST reject a name that contains anything other than lowercase letters, digits, and hyphens, or starts with a hyphen, printing a rejected line and reading nothing for it. The rejected line SHALL show any other character as `?`, so a name cannot forge a line.
 
 #### Scenario: Path traversal attempt
 - **WHEN** the outline is given `../secrets`
@@ -301,7 +331,12 @@ When a bug request carries pasted output longer than five lines, such as log lin
 - **THEN** the message stays under Actual exactly as given and there is no Logs block
 
 ### Requirement: Requester text never reaches a shell unquoted
-The skill MUST pass the title and body to any shell command only through temporary files. Label, assignee, milestone, project, host, and branch values SHALL be checked against fixed character patterns before use. A failing value SHALL be dropped and named in the reply.
+The skill MUST pass the title, body, and metadata to any shell command only through temporary files, read by a bundled creation script. The script SHALL check each value before use and SHALL pass every value to the GitLab CLI in `--flag=value` form:
+- a label or milestone starts with a letter or digit, then holds only letters, digits, spaces and `._:/-`, at most 64 characters;
+- an assignee starts with a letter, digit or `_`, then holds only letters, digits and `._-`, at most 64 characters;
+- one milestone at most; `confidential` only as `yes`.
+
+Host and project path follow the target project rules. A failing value SHALL be dropped, printed by the script, and named in the reply. A host issue tool receives the same checked values.
 
 #### Scenario: Command substitution in a title
 - **WHEN** the requested title contains `$(whoami)` and a backtick
@@ -311,8 +346,12 @@ The skill MUST pass the title and body to any shell command only through tempora
 - **WHEN** the requester asks for the label `ui; rm -rf ~`
 - **THEN** that label is dropped, the reply names it, and no other label is invented
 
+#### Scenario: Label shaped like a flag
+- **WHEN** the requester asks for the label `--confidential`
+- **THEN** that label is dropped and named, and the issue is not made confidential
+
 ### Requirement: Creation path order
-To create, the skill SHALL use a GitLab issue-creation tool the host provides. Only when no such tool exists SHALL it use `glab issue create` non-interactively against the resolved project. If neither works, it SHALL return the draft. A host-tool error SHALL end the run on the draft and MUST NOT fall through to `glab`. No failed attempt is retried with escalated access.
+To create, the skill SHALL use a GitLab issue-creation tool the host provides, never one for another tracker. Only when no such tool exists SHALL it use `glab issue create` non-interactively against the resolved project, through the bundled creation script, which first checks that `glab` is installed and signed in to the host. If neither works, it SHALL return the draft. A host-tool error SHALL end the run on the draft and MUST NOT fall through to `glab`. A failed creation SHALL NOT be retried, with escalated access or otherwise.
 
 #### Scenario: glab available
 - **WHEN** no host issue tool exists and `glab` is installed and authenticated for the project's host
@@ -377,9 +416,24 @@ The reply SHALL end with these fixed lines:
 - **WHEN** the run ends without creating an issue
 - **THEN** the reply contains `## Issue draft`, a `Not created:` line, a `Context from:` line, a `Context used:` line, and a `Possible duplicates:` line
 
+### Requirement: One Not created reason
+`Not created:` SHALL hold one reason. When several apply, the reply SHALL give the first of: `no subject given`, `possible security report`, `draft requested`, `no target project`, then the creation failure (the host tool's error, or the creation script's reason).
+
+#### Scenario: Security report in draft wording
+- **WHEN** the request reads "draft an issue: any signed-in user can open another customer's invoices"
+- **THEN** the reply ends with `Not created: possible security report`
+
+#### Scenario: Draft with no project
+- **WHEN** the request uses draft wording and no target project resolves
+- **THEN** the reply ends with `Not created: draft requested`
+
 ### Requirement: No lasting writes
-The skill MUST NOT write, create, or delete any file inside a local checkout. Temporary title and body files and any fetched copy SHALL live in the system temporary directory and SHALL be removed before the reply.
+The skill MUST NOT write, create, or delete any file inside a local checkout. Temporary title, body and metadata files and any fetched copy SHALL live in the system temporary directory and SHALL be removed before the reply. The creation script SHALL refuse a work directory that is not strictly below the system temporary directory, and SHALL remove the files it read whatever the outcome.
 
 #### Scenario: After a run with a fetch
 - **WHEN** the skill fetched a fresh copy and then created an issue or returned a draft
 - **THEN** the fetched copy and the temporary files no longer exist, and no checkout's working tree changed
+
+#### Scenario: Work directory inside a checkout
+- **WHEN** the creation script is given a directory outside the system temporary directory
+- **THEN** it refuses, reads and removes nothing, and calls no GitLab tool

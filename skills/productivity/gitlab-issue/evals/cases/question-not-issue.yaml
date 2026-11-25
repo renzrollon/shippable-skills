@@ -1,9 +1,16 @@
-# Fixture: no fixture needed.
-# Assertion: 'what issues are open?' prints neither Issue draft nor Issue created:.
 id: question-not-issue
 title: Question is not an issue request
 description: |
-  'what issues are open?' prints neither Issue draft nor Issue created:.
+  'what issues are open?' in a checkout of the project runs nothing that
+  drafts or creates an issue.
+
+context:
+  repo_fixture: scripts/fixtures/repo-full
+  git:
+    init: true
+    remotes:
+      - name: origin
+        url: https://gitlab.example.com/team/billing-export.git
 
 input:
   prompt: |
@@ -13,6 +20,7 @@ expect:
   must_not_contain:
     - "## Issue draft"
     - "Issue created:"
+    - "Context used:"
 
 judge:
   type: rule_based
@@ -21,3 +29,4 @@ judge:
         any:
           - "## Issue draft"
           - "Issue created:"
+          - "Context used:"

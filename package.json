@@ -2,7 +2,7 @@
   "name": "shippable-skills",
   "version": "0.2.1",
   "private": true,
-  "description": "Shippable agent skills: release bumps, test repair, codebase exploration, session handoff and primer, session retro, and product spine, installable on Cursor, Copilot, Codex, Claude Code, and other Agent Skills hosts.",
+  "description": "Shippable agent skills: release bumps, test repair, codebase exploration, session handoff and primer, session retro, product spine, and GitLab issues, installable on Cursor, Copilot, Codex, Claude Code, and other Agent Skills hosts.",
   "license": "MIT",
   "repository": {
     "type": "git",

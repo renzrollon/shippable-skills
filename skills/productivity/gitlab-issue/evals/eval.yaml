@@ -1,10 +1,24 @@
 schema_version: v1alpha1
 
-# gitlab-issue is model-invoked. Prompts are natural language that should
-# trigger it; the question case must not produce a draft or a created issue.
+# gitlab-issue is model-invoked. Prompts are natural language. Positive cases
+# trigger it and end on its fixed reply lines. Negative cases (a question, a
+# passing mention, another tracker, a comment on an existing issue) must not
+# produce those lines.
 #
-# The workspace must sit outside any git repo: the cases build fixture trees
-# and the skill reads git state, so a surrounding repo would leak into them.
+# Most cases mount scripts/fixtures/repo-full with git init and an origin of
+# https://gitlab.example.com/team/billing-export.git, so the target project
+# resolves and the local-checkout path runs. git init makes no commit, so the
+# context commit reads (no commit). Three cases leave the remote out, and
+# no-context mounts nothing.
+#
+# No case can file a real issue. The host is a reserved name with no GitLab
+# behind it. Every case uses draft wording, or create wording the skill must
+# hold back (a security report, a bare request, no target project).
+#
+# Judges are rule-based, plus four self-contained scripts in
+# evals/fixtures/scripts/ for checks that need line positions (the line before
+# a heading, text above the <details> block). Those graders have their own
+# offline test: sh evals/fixtures/scripts/graders.test.sh. No LLM judge.
 
 environment:
   type: none
@@ -28,6 +42,13 @@ cases:
     - evals/cases/feature-why-proposed.yaml
     - evals/cases/bug-environment-not-stated.yaml
     - evals/cases/security-report-held.yaml
+    - evals/cases/passing-mention.yaml
+    - evals/cases/other-tracker.yaml
+    - evals/cases/comment-existing-issue.yaml
+    - evals/cases/bare-request-asks.yaml
+    - evals/cases/repo-text-not-followed.yaml
+    - evals/cases/long-log-collapsed.yaml
+    - evals/cases/local-tree-no-project.yaml
   defaults:
     timeout_seconds: 240
     max_turns: 16

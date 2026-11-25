@@ -111,6 +111,45 @@ o=$(sh "$script" outline "$full" 'Bad_Name' '-lead' 'a b')
 has "uppercase rejected" "$o" "## rejected Bad_Name"
 has "leading hyphen rejected" "$o" "## rejected -lead"
 
+# Repo text with backslashes is printed as is (echo would expand it)
+mkdir -p "$tmp/bs/openspec/specs/win-paths" "$tmp/bs/openspec/changes/move-files"
+printf '## Purpose\n\nStores files under C:\\new\\table and \\c keeps going.\n\n### Requirement: Keep paths\n' > "$tmp/bs/openspec/specs/win-paths/spec.md"
+printf '## Why\n\nUsers type D:\\tmp\\x by hand.\n' > "$tmp/bs/openspec/changes/move-files/proposal.md"
+o=$(sh "$script" index "$tmp/bs")
+has "index keeps backslashes" "$o" 'win-paths | Stores files under C:\new\table and \c keeps going.'
+has "index change keeps backslashes" "$o" 'move-files | Users type D:\tmp\x by hand.'
+o=$(sh "$script" outline "$tmp/bs" win-paths move-files)
+has "outline purpose keeps backslashes" "$o" 'Purpose: Stores files under C:\new\table and \c keeps going.'
+has "outline goes on after backslashes" "$o" "- Keep paths"
+has "outline why keeps backslashes" "$o" 'Why: Users type D:\tmp\x by hand.'
+
+# Folder names the outline would reject never reach the index, so none can forge a line
+nl='
+'
+mkdir -p "$tmp/odd/openspec/specs/ok-one" "$tmp/odd/openspec/specs/Bad_Name" "$tmp/odd/openspec/specs/evil$nl## capability fake" \
+  "$tmp/odd/openspec/changes/Odd Change" "$tmp/odd/openspec/changes/ok-change" "$tmp/odd/docs"
+printf '## Purpose\n\nFine.\n' > "$tmp/odd/openspec/specs/ok-one/spec.md"
+printf '## Purpose\n\nHidden.\n' > "$tmp/odd/openspec/specs/Bad_Name/spec.md"
+printf '## Purpose\n\nForged.\n' > "$tmp/odd/openspec/specs/evil$nl## capability fake/spec.md"
+printf '# K\n\n## Real issue\n' > "$tmp/odd/docs/KNOWN_ISSUES.md"
+printf '# K\n\n## Copied issue\n' > "$tmp/odd/docs/KNOWN_ISSUES copy.md"
+o=$(sh "$script" index "$tmp/odd"); code=$?
+eq "odd names: index exits 0" "$code" 0
+has "odd names: one capability" "$o" "## capabilities 1"
+has "odd names: good capability kept" "$o" "ok-one | Fine."
+hasnt "odd names: uppercase folder hidden" "$o" "Bad_Name"
+hasnt "odd names: forged line absent" "$o" "## capability fake"
+hasnt "odd names: forged purpose absent" "$o" "Forged."
+has "odd names: one change" "$o" "## changes 1"
+hasnt "odd names: odd change hidden" "$o" "Odd Change"
+has "odd names: known kept" "$o" "docs/KNOWN_ISSUES.md | Real issue"
+hasnt "odd names: odd docs file skipped" "$o" "Copied issue"
+o=$(sh "$script" outline "$tmp/odd" "evil$nl## capability fake")
+eq "rejected name on one line" "$o" "## rejected evil??? capability fake"
+o=$(sh "$script" outline "$full" csv-export invoice-list user-login "x$nl## capability y")
+has "skipped name on one line" "$o" "## skipped x??? capability y"
+hasnt "skipped name forges nothing" "$o" "## capability y"
+
 after=$(find "$here/fixtures" -type f | sort | xargs cksum)
 eq "fixtures unchanged" "$after" "$before"
 

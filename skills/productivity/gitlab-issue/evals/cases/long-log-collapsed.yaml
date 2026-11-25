@@ -1,0 +1,36 @@
+id: long-log-collapsed
+title: A pasted log over five lines is collapsed
+description: |
+  A bug with a seven-line pasted trace puts the trace in the collapsed Logs
+  block, below a "Log attached below." note under Actual.
+
+context:
+  repo_fixture: scripts/fixtures/repo-full
+  git:
+    init: true
+    remotes:
+      - name: origin
+        url: https://gitlab.example.com/team/billing-export.git
+
+input:
+  prompt: |
+    draft a bug issue: the invoice export crashes for big months. This is what the console shows:
+
+    Error: export failed for job 4411
+        at ExportWorker.run (export-worker.js:88:13)
+        at Queue.process (queue.js:41:9)
+        at async Runner.tick (runner.js:17:5)
+        at async Runner.loop (runner.js:9:3)
+    Caused by: RowLimitExceeded: 10000 rows
+        at Batch.check (batch.js:22:11)
+
+expect:
+  must_contain:
+    - "## Issue draft"
+  must_not_contain:
+    - "Issue created:"
+
+judge:
+  type: script
+  script_path: evals/fixtures/scripts/grade-logs.sh
+  timeout_seconds: 30

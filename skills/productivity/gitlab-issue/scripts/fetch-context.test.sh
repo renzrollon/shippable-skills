@@ -21,6 +21,9 @@ cat > "$stubs/git" <<'STUB'
 #!/bin/sh
 echo "git $*" >> "$STUB_LOG"
 if [ "$1" = clone ]; then
+  printf 'env %s|%s|%s|%s\n' "$GIT_TERMINAL_PROMPT" "$GCM_INTERACTIVE" "$GLAB_NO_PROMPT" "$GIT_SSH_COMMAND" >> "$STUB_LOG"
+  if IFS= read -r line; then echo "stdin open" >> "$STUB_LOG"; fi
+  if [ -n "${STUB_GIT_FAIL:-}" ]; then printf 'Cloning...\n%s\n' "$STUB_GIT_FAIL" >&2; exit 128; fi
   for a in "$@"; do d=$a; done
   mkdir -p "$d"
   exit 0
@@ -41,6 +44,7 @@ STUB
 cat > "$stubs/glab" <<'STUB'
 #!/bin/sh
 echo "glab $*" >> "$STUB_LOG"
+if [ "$1" = auth ]; then exit "${STUB_GLAB_AUTH:-0}"; fi
 for a in "$@"; do [ "$a" = -- ] && break; d=$a; done
 # destination is the argument before the -- separator
 mkdir -p "$d"
@@ -105,6 +109,38 @@ out=$(run "$stubs:$sysp" gitlab.example.com group/proj "$tmp/ok2" release/1.0); 
 eq "glab fetch exits 0" "$code" 0
 eq "glab fetch output" "$out" "fetched: $tmp/ok2 release/1.0 abc1234"
 grep -q 'glab repo clone https://gitlab.example.com/group/proj .* -- --depth 1 --filter=blob:none --sparse --quiet --branch release/1.0' "$STUB_LOG" && pass "glab clone flags" || fail "glab clone flags"
+
+# glab installed but not signed in to the host: git clones instead
+: > "$STUB_LOG"
+out=$(env STUB_GLAB_AUTH=1 PATH="$stubs:$sysp" "$shbin" "$script" gitlab.example.com group/proj "$tmp/ok3"); code=$?
+eq "unsigned glab exits 0" "$code" 0
+eq "unsigned glab output" "$out" "fetched: $tmp/ok3 main abc1234"
+grep -q '^glab auth status --hostname gitlab.example.com$' "$STUB_LOG" && pass "glab auth checked for the host" || fail "glab auth checked for the host"
+grep -q '^glab repo clone' "$STUB_LOG" && fail "unsigned glab still cloned" || pass "unsigned glab not used to clone"
+grep -q '^git clone --depth 1 --filter=blob:none --sparse --quiet https://gitlab.example.com/group/proj ' "$STUB_LOG" && pass "git used instead" || fail "git used instead"
+
+# Nothing can prompt: prompt switches set, ssh in batch mode, stdin closed
+: > "$STUB_LOG"
+out=$(printf 'typed-secret\n' | env GIT_SSH_COMMAND= PATH="$gitonly:$sysp" "$shbin" "$script" gitlab.example.com group/proj "$tmp/ok4")
+eq "no-prompt fetch output" "$out" "fetched: $tmp/ok4 main abc1234"
+eq "prompt switches reach git" "$(grep '^env ' "$STUB_LOG")" "env 0|never|1|ssh -o BatchMode=yes"
+grep -q 'stdin open' "$STUB_LOG" && fail "clone could read stdin" || pass "clone stdin closed"
+: > "$STUB_LOG"
+env GIT_SSH_COMMAND="ssh -i /keys/deploy" PATH="$gitonly:$sysp" "$shbin" "$script" gitlab.example.com group/proj "$tmp/ok5" >/dev/null
+eq "own ssh command kept" "$(grep '^env ' "$STUB_LOG")" "env 0|never|1|ssh -i /keys/deploy"
+
+# A clone failure reports git's last line unchanged, backslashes included, and leaves nothing
+out=$(env STUB_GIT_FAIL='fatal: repository C:\new\table not found' PATH="$gitonly:$sysp" "$shbin" "$script" gitlab.example.com group/proj "$tmp/ok6"); code=$?
+eq "clone failure exits 1" "$code" 1
+eq "clone failure reason literal" "$out" 'fetch failed: fatal: repository C:\new\table not found'
+[ -e "$tmp/ok6" ] && fail "clone failure left dest" || pass "clone failure left nothing"
+
+# A broken symlink counts as an existing destination
+ln -s "$tmp/nowhere" "$tmp/dangling"
+: > "$STUB_LOG"
+out=$(run "$stubs:$sysp" gitlab.example.com group/proj "$tmp/dangling")
+eq "dangling symlink refused" "$out" "fetch failed: destination already exists"
+eq "dangling symlink made no call" "$(cat "$STUB_LOG")" ""
 
 # No credential ever appears in a URL or the script
 grep -q '@gitlab' "$STUB_LOG" && fail "credential-style url" || pass "no credential in url"

@@ -1,9 +1,16 @@
-# Fixture: scripts/fixtures/repo-full with shippable-issue-project set to gitlab.example.com/team/billing-export.
-# Assertion: Draft wording makes no creation attempt: no Issue created: line, a Not created: line instead.
 id: draft-wording-no-create
 title: Draft wording creates nothing
 description: |
-  Draft wording makes no creation attempt: no Issue created: line, a Not created: line instead.
+  The project resolves from the origin remote, so only the wording stops the
+  create: the reply gives the draft reason and no Issue created: line.
+
+context:
+  repo_fixture: scripts/fixtures/repo-full
+  git:
+    init: true
+    remotes:
+      - name: origin
+        url: https://gitlab.example.com/team/billing-export.git
 
 input:
   prompt: |
@@ -12,10 +19,12 @@ input:
 expect:
   must_not_contain:
     - "Issue created:"
+    - "Not created: no target project"
 
 judge:
   type: rule_based
   success:
     - output_contains:
         all:
-          - "Not created:"
+          - "## Issue draft"
+          - "Not created: draft requested"

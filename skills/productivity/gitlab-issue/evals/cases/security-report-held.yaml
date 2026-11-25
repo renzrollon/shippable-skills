@@ -1,9 +1,17 @@
-# Fixture: scripts/fixtures/repo-full with shippable-issue-project set to gitlab.example.com/team/billing-export.
-# Assertion: A data exposure reported with create wording is not filed: no Issue created: line, and the fixed reason.
 id: security-report-held
 title: Possible security report is held back
 description: |
-  A data exposure reported with create wording is not filed: no Issue created: line, and the fixed reason.
+  A data exposure reported with create wording, in a checkout whose project
+  resolves, is not filed: no Issue created: line, the security reason, and a
+  pointer to asking for a confidential issue.
+
+context:
+  repo_fixture: scripts/fixtures/repo-full
+  git:
+    init: true
+    remotes:
+      - name: origin
+        url: https://gitlab.example.com/team/billing-export.git
 
 input:
   prompt: |
@@ -20,3 +28,4 @@ judge:
         all:
           - "## Issue draft"
           - "Not created: possible security report"
+          - "confidential"

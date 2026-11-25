@@ -33,8 +33,9 @@ on GitLab", "log a bug", "draft an issue".
 | A product owner wants a feature logged | Proposed acceptance criteria as checkboxes, plus overlapping changes |
 | You want to review wording first | Say "draft" or "preview" and nothing is created |
 
-Skip it for a passing "we should track this" and for questions about existing
-issues such as "what issues are open?".
+Skip it for a passing "we should track this", for questions about existing
+issues such as "what issues are open?", for commenting on, closing, or editing
+an existing issue, and for issues on GitHub, Jira, or Linear.
 
 ## Common questions
 
@@ -47,6 +48,19 @@ It makes a fresh sparse copy in the system temporary directory, reads from it,
 and deletes it before replying. The reply says `Context from: fresh copy`. To
 pick the project, name it in the request or add one line to the instruction
 file, for example `shippable-issue-project: gitlab.example.com/team/billing-export`.
+
+**What happens in a folder with specs but no GitLab project?**
+When no project resolves (none named, no `shippable-issue-project:` line, no
+origin remote), the skill still reads the current folder's `openspec/` or
+`docs/` for context. It fetches nothing and creates nothing, and ends on the
+draft with `Not created: no target project`. A folder that is not a git repo,
+or has no commit yet, shows `(no commit)` where the commit would go.
+
+**Why does a draft say `Not created:` with one reason when several apply?**
+The reply gives the first that applies, in this order: no subject given,
+possible security report, draft requested, no target project, then the
+creation error. A security report asked for as a draft says
+`possible security report`, so you know it would not be filed either way.
 
 **How do tokens stay out of it?**
 The skill never reads, prints, or passes a token, and never puts a credential in
@@ -84,10 +98,24 @@ you ask for a confidential issue. You get the draft with
 to file it.
 
 **Which tools does it create with?**
-A GitLab issue tool the host provides, first. If none exists, `glab`. If a host
-tool errors, it ends on the draft and never falls through to `glab`, because a
-timed-out create may have succeeded. Titles and bodies reach the shell only
-through files.
+A GitLab issue tool the host provides, first. If none exists, `glab`, through
+the bundled `scripts/create-issue.sh`. If a host tool errors, it ends on the
+draft and never falls through to `glab`, because a timed-out create may have
+succeeded. The title, body, and any labels, assignee, or milestone reach the
+shell only through files in the temporary directory. The script checks each
+value, drops one that could be read as a flag or holds shell characters (for
+example `--confidential` or `ui; rm -rf ~`), and the reply names what it
+dropped. It removes its files whatever happens.
+
+**Can I stop the agent from filing issues on its own?**
+The skill is model-invoked, because product owners and testers ask in plain
+chat. Three things keep it from filing by surprise: it needs an explicit ask,
+"draft" or "preview" never creates, and a possible security report is held
+back. If you never want it to run unasked, turn off implicit use for this one
+skill in your host. In Claude Code, for a personal or project install, set
+`"skillOverrides": { "gitlab-issue": "user-invocable-only" }` in your
+settings, or cycle it in the `/skills` menu. Plugin installs are managed
+through `/plugin` instead.
 
 ## It's working if
 
@@ -97,6 +125,12 @@ Manual checks:
   `openspec/specs/`.
 - A run with no checkout prints `Context from: fresh copy <branch> <commit>`.
 - A `glab` creation prints an `Issue created:` URL that opens the new issue.
+- A request that names the label `ui; rm -rf ~` creates the issue without it,
+  and the reply names the dropped label.
+- With `shippable-issue-bug-label: type::bug` in the instruction file, a created
+  bug carries that label.
+- A security report asked for as confidential is created with the confidential
+  flag set.
 - A creation through a host tool works and returns the issue URL.
 - A host-tool error ends on `## Issue draft` with that error after `Not created:`.
 - The `<details>` block renders collapsed in GitLab.
@@ -105,6 +139,8 @@ Manual checks:
 - A bug issue has an `Environment` section, and a pasted stack trace sits in a
   collapsed `Logs` block.
 - The technical notes open with `Context read at` and the commit.
+- A draft in a folder with `openspec/` and no remote cites its capabilities and
+  ends with `Not created: no target project`.
 - Nothing new appears in the checkout afterwards (`git status` is unchanged).
 
 ## Migration plan

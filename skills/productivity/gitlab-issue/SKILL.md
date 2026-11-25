@@ -1,7 +1,8 @@
 ---
 name: gitlab-issue
-description: Turn a one-line request into a GitLab issue that carries the project's own OpenSpec and docs context, written in plain language with technical notes collapsed at the end. Use when someone explicitly asks to "create a gitlab issue", "file a ticket", "raise a bug on GitLab", "open an issue for this", "log a bug", or "draft an issue". Does not run on a passing mention such as "we should track this", and does not run for questions about existing issues such as "what issues are open?".
+description: Turn a one-line request into a GitLab issue that carries the project's own OpenSpec and docs context, written in plain language with technical notes collapsed at the end. Use when someone explicitly asks to "create a gitlab issue", "file a ticket", "raise a bug on GitLab", "open an issue for this", "log a bug", or "draft an issue". Does not run on a passing mention such as "we should track this", on questions about existing issues such as "what issues are open?", on commenting on, closing, or editing an existing issue, or for GitHub, Jira, or Linear issues.
 license: MIT
+compatibility: Needs a POSIX shell with awk, grep, sed, cut, head and tr. A fresh copy of the project needs git or glab. Creating needs a host GitLab issue tool or a signed-in glab; without one it returns a draft.
 metadata:
   version: 0.1.0
 ---
@@ -10,9 +11,11 @@ Write one GitLab issue from a short request. Ground it in the project's
 OpenSpec specs and docs, keep the top of the body readable by a product owner,
 and put developer detail in a collapsed block at the end.
 
-This skill is **host-neutral**. It needs a POSIX shell for its two bundled
-scripts. `<skill-dir>` below means the folder holding this file. Creation uses
-a GitLab issue tool the host provides, else `glab`, else it returns a draft.
+This skill is **host-neutral**. It needs a POSIX shell for its bundled
+scripts. Wherever `<skill-dir>` appears below, put the absolute path of the
+folder holding this file. Never pass `<skill-dir>` literally. Creation uses a
+GitLab issue tool the host provides, else `glab` through a bundled script,
+else it returns a draft.
 
 ## Rules that hold for the whole run
 
@@ -35,7 +38,7 @@ a GitLab issue tool the host provides, else `glab`, else it returns a draft.
 ## Procedure
 
 Run these steps in order. The whole run is one fetch at most, one `index`
-call, and one `outline` call of up to three names.
+call, one `outline` call of up to three names, and one creation attempt.
 
 ### 1. Parse the request
 
@@ -72,40 +75,55 @@ Use the first that applies:
    from SSH (`git@host:group/sub/project.git`) or HTTPS
    (`https://host/group/sub/project.git`) form, with `.git` stripped.
 
-One resolved project feeds both the fetch and the creation. If none resolves,
-fetch nothing, use no context, and return the draft with
-`Not created: no target project`.
+One resolved project feeds the fetch, the creation, and the type label. If
+none resolves, nothing is fetched or created and the reply ends on the draft.
+A local directory can still give context (step 3).
 
-Check the values before using them. Host must match `^[A-Za-z0-9.-]+$`. Path
-must match `^[A-Za-z0-9._/-]+$` and must not contain `..`. A branch, when the
-requester names one, must match `^[A-Za-z0-9._/-]+$`. The default branch is
-used unless a branch is named.
+Check each value before it reaches a command line, and put it there in single
+quotes:
+
+- **Host:** letters, digits, dots and hyphens, not starting with a hyphen.
+- **Path:** letters, digits and `._/-`, not starting with `-` or `/`, with no
+  `..` or `//`.
+- **Branch**, when the requester names one: letters, digits and `._/-`, not
+  starting with `-`, with no `..`. Without one, the default branch is used.
+
+A host or path that fails leaves the project unresolved. A branch that fails
+is not used. Name the failing value in the reply. The scripts check these
+values again and refuse a bad one.
 
 ### 3. Resolve the context source
 
 Take the first that works:
 
-1. **Local checkout.** The current directory's git top level, or a path the
-   requester names, whose origin matches the resolved project and which holds
-   `openspec/` or `docs/`. Get its commit with `git rev-parse --short HEAD`.
-   Do not pull: that would write to the checkout.
-2. **Fresh copy.** Make a new directory name under the system temporary
-   directory that does not exist yet, then run:
+1. **Local checkout.** The current directory's git top level (or the current
+   directory, when it is not inside a git repo), or a path the requester
+   names, that holds `openspec/` or `docs/`. When step 2 resolved a project,
+   the checkout's origin must be that project (same host and path, in SSH or
+   HTTPS form). When no project resolved, read it anyway: it gives the draft
+   context, and nothing is fetched or created. Its commit is
+   `git rev-parse --short HEAD`, or `(no commit)` when that fails (not a git
+   repo, or no commit yet). Do not pull: that would write to the checkout.
+2. **Fresh copy**, only when step 2 resolved a project. Make a new directory
+   name under the system temporary directory that does not exist yet, then
+   run:
 
    ```
-   sh <skill-dir>/scripts/fetch-context.sh <host> <path> <dest> [branch]
+   sh <skill-dir>/scripts/fetch-context.sh '<host>' '<path>' '<dest>' ['<branch>']
    ```
 
    It prints `fetched: <dest> <branch> <commit>` on success, or
-   `fetch failed: <reason>` with exit 1. On success, `<dest>` is the repo
-   root. On failure, record the reason and go to 3.
+   `fetch failed: <reason>` with exit 1. It never waits on a prompt. On
+   success, `<dest>` is the repo root. On failure, record the reason and go
+   to 3.
 3. **None.** Write the issue from the request alone. The reply will say
-   `Context from: none (<reason>)`.
+   `Context from: none (<reason>)`: the fetch failure, or `no target project`
+   when there was nothing to fetch.
 
 ### 4. Read the index
 
 ```
-sh <skill-dir>/scripts/issue-context.sh index <repo-root>
+sh <skill-dir>/scripts/issue-context.sh index '<repo-root>'
 ```
 
 It is read-only and prints these sections, each with a count or the word
@@ -117,7 +135,9 @@ step 5 when the context source is none.
 
 If the script cannot run or exits non-zero (a usage error prints a `usage:`
 line and exits 2), use the **bounded fallback**, with the same
-three-capability cap:
+three-capability cap.
+[references/openspec-layout.md](references/openspec-layout.md) shows where
+these headings sit.
 
 1. list the folder names under `openspec/specs/`;
 2. read only the first non-empty line after each `## Purpose`;
@@ -136,129 +156,103 @@ requester's words (a request about "login" may live in a capability named
 - any active change that overlaps the request;
 - any known-issue or backlog title that may be the same problem.
 
-Then run one outline call with the picked names (capabilities and changes,
-three at most):
+Then run one outline call. It takes at most three names in total,
+capabilities and changes together. A fourth name comes back as `## skipped`,
+so choose which three matter most.
 
 ```
-sh <skill-dir>/scripts/issue-context.sh outline <repo-root> <name> [<name> <name>]
+sh <skill-dir>/scripts/issue-context.sh outline '<repo-root>' <name> [<name> <name>]
 ```
 
-Each name must be lowercase letters, digits and hyphens only. The output has
-`## capability <name>` with the full Purpose and nested Requirement and
-Scenario titles, `## change <name>` with its Why, and `## not-found <name>`,
-`## rejected <name>`, or `## skipped <names>` lines. Do not cite a name that
-came back not-found or rejected. A possible duplicate never stops the issue.
+Each name must be lowercase letters, digits and hyphens only. The index lists
+only such names. The output has `## capability <name>` with the full Purpose
+and nested Requirement and Scenario titles, `## change <name>` with its Why,
+and `## not-found <name>`, `## rejected <name>`, or `## skipped <names>` lines.
+Do not cite a name that came back not-found or rejected. A possible duplicate
+never stops the issue.
 
 ### 6. Write the body
 
-Open [references/issue-templates.md](references/issue-templates.md) and fill the
-matching body, bug or feature. It sets the section order and has one worked
-example of each. Layout notes for the spec files are in
-[references/openspec-layout.md](references/openspec-layout.md).
+Open [references/issue-templates.md](references/issue-templates.md). It is the
+one source for the title and the body: the rules for every body, the section
+order and rules for a feature and for a bug, and a worked example of each.
+Fill the matching body from the request and this run's script output.
 
-Audience split:
+Then check the draft against these, and fix it before step 7 if one fails:
 
-- **Above the `<details>` blocks** the reader is a product owner or QA tester.
-  Paraphrase technical Purpose text in plain words. Never add a file path,
-  route, table or column name, environment variable name, or code that you
-  took from the repo. If a Purpose names a database table, describe the
-  behaviour without the table name.
-- **Requester-supplied** steps, URLs, paths, and error text stay exactly as
-  given, even when they look technical.
-- **Never guess.** A section the request and the context cannot fill reads
-  `Not stated`. That covers Why, Who is affected, and both Environment lines.
-- **Why** (feature only). The problem or goal the request gives, else
-  `Not stated`. Do not make up a reason.
-- **Who is affected.** A persona from the index, else the role in the request,
-  else `Not stated`.
-- **Environment** (bug only). `- Seen in:` and `- Worked before:`, each from
-  the request, else `Not stated`. Do not work either out from a URL or from
-  the repo.
-- **Bug with no steps.** Write that the requester did not give steps. Do not
-  invent them.
-- **Acceptance criteria.** The heading reads `## Acceptance criteria (proposed)`
-  because you drafted them and nobody has agreed them yet. They are checkboxes,
-  `- [ ] WHEN ... THEN ...`, at least two. A feature has one for the new
-  behaviour and one for an edge case or a behaviour that must stay the same. A
-  bug has one for the fixed behaviour and one for a neighbouring case that
-  must still work. If an outline scenario covers behaviour a feature request
-  changes, name it and its capability under Today. If a bug contradicts an
-  outline scenario, name that scenario and its capability under Expected.
-- **Open questions.** Checkboxes, one per gap someone must close before work
-  starts: no reason given, no steps, an Environment line that reads
-  `Not stated`, and each choice you made in the criteria that the request does
-  not settle. Ask only, do not answer. Leave the section out when there are
-  none.
-- **Related** lists matched capability names, an overlapping active change, and
-  possible duplicate known-issue or backlog titles with their doc path. With
-  context and no match it reads `None found`. With no context it reads
-  `Not checked (no project context)`.
-- **Logs** (bug only). Output the requester pasted that runs past five lines
-  goes unchanged in a fenced block inside `<details><summary>Logs</summary>`,
-  placed before the technical notes. Shorter error text stays under Actual.
-  With no such output there is no Logs block.
-- **Technical notes** go last, inside
-  `<details><summary>Technical notes (for developers)</summary>`: first a line
-  `Context read at` with the commit from step 3, then requirement titles and
-  repo-relative paths in backticks, such as `openspec/specs/<name>/spec.md`.
-  No code, no invented file names, no web links built from a guessed branch.
-- A bug title starts with `Bug: `. Add no authorship footer to any body.
-- With no context, cite no capability or path, and leave the technical notes
-  block out.
+- Above the `<details>` blocks, nothing taken from the repo is a path, route,
+  table or column name, environment variable name, or code.
+- Every capability, change, persona, known-issue title, and path came from
+  this run's script output.
+- Each gap reads `Not stated` and has a matching open question.
+- A bug title starts with `Bug: `, and a feature title has no prefix.
 
 ### 7. Create, or return the draft
 
-If the wording asked for a draft, preview, or write-up, create nothing and go
-to the reply.
+Take the first that applies. The text in backticks is the `Not created:`
+reason.
 
-If step 1 noted a possible security report and the requester did not ask for a
-confidential issue, create nothing. Go to the reply with
-`Not created: possible security report`, and tell the requester that asking
-again with the word "confidential" files it. Never set the confidential flag
-on your own.
+1. **Possible security report** (`possible security report`): step 1 noted
+   one and the requester did not ask for a confidential issue. Tell the
+   requester that asking again with the word "confidential" files it. Never
+   set the confidential flag on your own.
+2. **Draft wording** (`draft requested`): the request asked for a draft,
+   preview, or write-up.
+3. **No project** (`no target project`): step 2 resolved none.
+4. **Otherwise create**, as below. A failure gives its own reason.
 
-Otherwise create in this order. The title and body reach a shell only through
+**Metadata** is only what the requester named, plus a type label. The
+instruction file from step 2 may hold `shippable-issue-bug-label: <label>` and
+`shippable-issue-feature-label: <label>`. Add the one that matches the kind
+from step 1, next to any label the requester named. Skip both lines when the
+requester named a different project than the one that file belongs to. With
+no such line, add no type label. Never invent a replacement for a value that
+is dropped.
+
+Create in this order. The title, body, and metadata reach a shell only through
 files. Never place them, or any requester text, in a command line.
 
-1. **A host issue tool.** If the host provides a GitLab issue-creation tool,
-   use it with the resolved project, the title, the body, and any validated
-   metadata. Do not name a vendor tool. If it errors or times out, end the run
-   on the draft with that error as the `Not created:` reason. Never fall
-   through to `glab`, because a timed-out create may have succeeded.
+1. **A host issue tool.** If the host provides a GitLab issue-creation tool
+   (not one for GitHub, Jira, or Linear), use it with the resolved project,
+   the title, the body, and the metadata. If it needs a numeric project ID,
+   look that up first with the host's GitLab project lookup tool. Pass a label
+   or milestone only when it starts with a letter or digit and holds only
+   letters, digits, spaces and `._:/-`. Pass an assignee only when it starts
+   with a letter, digit or `_` and holds only letters, digits and `._-`. Each
+   is at most 64 characters. Drop any other value and name it in the reply.
+   If the tool errors or times out, end the run on the draft with that error
+   as the reason. Never fall through to `glab`, because a timed-out create may
+   have succeeded.
 2. **`glab`, only when no such tool exists.**
-   1. Check `glab auth status --hostname <host>`. If `glab` is missing or not
-      signed in, go to 3.
-   2. Write the title to one file and the body to another in the system
-      temporary directory, using the host's file-write tool or a heredoc with a
-      quoted delimiter (`<<'EOF'`), so nothing inside expands.
-   3. Run:
+   1. Make a new directory under the system temporary directory (for example
+      with `mktemp -d`). Write these files in it with the host's file-write
+      tool, or a heredoc with a quoted delimiter (`<<'EOF'`) so nothing inside
+      expands:
+      - `title`: the title, on one line;
+      - `body`: the body;
+      - `meta`, only when there is metadata: one `key: value` line per value,
+        from `label:`, `assignee:`, `milestone:` and `confidential: yes`.
+   2. Run:
 
       ```
-      glab issue create -R https://<host>/<path> -t "$(cat <title-file>)" -d "$(cat <body-file>)" -y --no-editor
+      sh <skill-dir>/scripts/create-issue.sh '<host>' '<path>' '<work-dir>'
       ```
 
-      Add metadata flags only for values the requester named and that passed
-      the checks below. Command substitution output is not expanded again, so
-      `$(whoami)` or a backtick in a title lands literally.
-   4. Remove both files.
-3. **Otherwise** return the draft with the reason (`glab` missing, not signed
-   in, or no target project).
-
-Metadata checks, before use: a label or milestone must match
-`^[A-Za-z0-9 ._:/-]{1,64}$`, and an assignee must match
-`^[A-Za-z0-9._-]{1,64}$`. Drop a value that fails and name it in the reply.
-Do not invent a replacement. Set confidential only when asked.
-
-Type label. The instruction file from step 2 may hold
-`shippable-issue-bug-label: <label>` and
-`shippable-issue-feature-label: <label>`. Add the one that matches the kind
-from step 1, next to any label the requester named. It must pass the label
-check above. Skip both lines when the requester named a different project
-than the one that file belongs to. With no such line, add no type label.
+      It checks every metadata value against the same patterns as the host
+      tool path and prints `dropped: <key> <value>` for each one it rejects. It checks that `glab`
+      is installed and signed in to the host, then creates the issue with no
+      prompt. It removes the three files, and the directory, whatever the
+      outcome. It ends with `created: <url>` (exit 0) or
+      `create failed: <reason>` (exit 1), such as `glab not installed` or
+      `glab not signed in to <host>`. On a failure, end the run on the draft
+      with that reason. Do not run it again, and do not run `glab` yourself.
+3. **Neither** (no host tool, and no shell to run the script): the reason is
+   `no creation tool`.
 
 ### 8. Clean up and reply
 
-Remove the title and body files and, if you fetched one, the copy in the
+Remove any `title`, `body` or `meta` file the creation script did not remove
+(it removes them whenever it runs) and, if you fetched one, the copy in the
 temporary directory. Never touch a checkout. Then end the reply with these
 fixed lines:
 
@@ -283,30 +277,19 @@ Context used: <capability and change names, or none>
 Possible duplicates: <titles with doc paths, or none>
 ```
 
+`Not created:` holds one reason. When several apply, give the first of
+`no subject given`, `possible security report`, `draft requested`,
+`no target project`, then the creation failure. Steps 1 and 7 already run in
+that order.
+
 `Context from:` is one of `local checkout <commit>`,
-`fresh copy <branch> <commit>`, or `none (<reason>)`. When no context was
-found, say in the reply that no project context was found. Name any metadata
-value you dropped.
-
-## Project line conventions
-
-To let requesters skip naming the project, add one line to the instruction
-file: `shippable-issue-project: <host>/<path>`, for example
-`shippable-issue-project: gitlab.example.com/team/billing-export`. A project
-the requester names always wins over it.
-
-To put a type label on every issue of a kind, add either or both of these
-lines to the same file, for example:
-
-```
-shippable-issue-bug-label: type::bug
-shippable-issue-feature-label: type::feature
-```
-
-Each line holds one label. The skill never picks a type label on its own.
+`fresh copy <branch> <commit>`, or `none (<reason>)`, where `<commit>` may be
+`(no commit)`. When no context was found, say in the reply that no project
+context was found. Name every metadata value that was dropped, by you or in a
+`dropped:` line, and any project or branch value that failed its check.
 
 ## References
 
-- [references/issue-templates.md](references/issue-templates.md)
-- [references/openspec-layout.md](references/openspec-layout.md)
-- Scripts: [scripts/issue-context.sh](scripts/issue-context.sh), [scripts/fetch-context.sh](scripts/fetch-context.sh)
+- [references/issue-templates.md](references/issue-templates.md): title and body rules, both templates, worked examples
+- [references/openspec-layout.md](references/openspec-layout.md): where specs and docs live, for the bounded fallback
+- Scripts: [scripts/issue-context.sh](scripts/issue-context.sh), [scripts/fetch-context.sh](scripts/fetch-context.sh), [scripts/create-issue.sh](scripts/create-issue.sh)

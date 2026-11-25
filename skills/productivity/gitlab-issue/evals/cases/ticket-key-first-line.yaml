@@ -1,18 +1,28 @@
-# Fixture: scripts/fixtures/repo-full copied into the workspace.
-# Assertion: PROJ-123 in the request lands on the first line of the body.
 id: ticket-key-first-line
 title: Ticket key on first line
 description: |
-  PROJ-123 in the request lands on the first line of the body.
+  PROJ-123 in the request is the first line of the body: the last non-empty
+  line before "## Summary" inside the draft.
+
+context:
+  repo_fixture: scripts/fixtures/repo-full
+  git:
+    init: true
+    remotes:
+      - name: origin
+        url: https://gitlab.example.com/team/billing-export.git
 
 input:
   prompt: |
     draft a gitlab issue for PROJ-123: add a CSV option to the invoice export
 
+expect:
+  must_contain:
+    - "## Issue draft"
+  must_not_contain:
+    - "Issue created:"
+
 judge:
-  type: rule_based
-  success:
-    - output_contains:
-        all:
-          - "## Issue draft"
-          - "PROJ-123"
+  type: script
+  script_path: evals/fixtures/scripts/grade-key-first-line.sh
+  timeout_seconds: 30

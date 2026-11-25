@@ -1,0 +1,30 @@
+id: comment-existing-issue
+title: Commenting on an existing issue does not run the skill
+description: |
+  Adding a comment to issue 42 is not a request for a new issue. No draft,
+  no creation, and none of the skill's reply lines. No remote is set, so
+  nothing can be posted anywhere.
+
+context:
+  repo_fixture: scripts/fixtures/repo-full
+  git:
+    init: true
+
+input:
+  prompt: |
+    add a comment to gitlab issue 42 saying the CSV export fix is deployed
+
+expect:
+  must_not_contain:
+    - "## Issue draft"
+    - "Issue created:"
+    - "Context used:"
+
+judge:
+  type: rule_based
+  failure:
+    - output_contains:
+        any:
+          - "## Issue draft"
+          - "Issue created:"
+          - "Context used:"

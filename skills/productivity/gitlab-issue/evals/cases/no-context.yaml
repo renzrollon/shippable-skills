@@ -1,18 +1,33 @@
-# Fixture: an empty directory: no openspec/, no docs/, no project.
-# Assertion: A tree with no openspec/ or docs/ gives Context from: none and Context used: none.
 id: no-context
 title: No context found
 description: |
-  A tree with no openspec/ or docs/ gives Context from: none and Context used: none.
+  An empty repo with no openspec/, no docs/ and no remote gives a draft with no
+  citations: Context from none, Context used none, Related not checked, and no
+  technical notes block.
+
+context:
+  git:
+    init: true
 
 input:
   prompt: |
     draft a gitlab issue: the dashboard loads slowly
 
+expect:
+  must_not_contain:
+    - "Issue created:"
+    - "<summary>Technical notes"
+
 judge:
   type: rule_based
+  failure:
+    - output_contains:
+        any:
+          - "<summary>Technical notes"
   success:
     - output_contains:
         all:
+          - "## Issue draft"
+          - "Not checked (no project context)"
           - "Context from: none"
           - "Context used: none"

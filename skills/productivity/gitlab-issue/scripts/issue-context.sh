@@ -1,6 +1,7 @@
 #!/bin/sh
 # issue-context.sh: read-only context index and capability outline for an
-# OpenSpec project. POSIX sh, awk, grep, sed, sort only. No network, no writes.
+# OpenSpec project. POSIX sh, awk, grep, sed, cut, head, tr only. No network,
+# no writes.
 #
 # usage: issue-context.sh index|outline <repo-root> [names...]
 #
@@ -10,9 +11,22 @@ LC_ALL=C
 export LC_ALL
 
 usage() {
-  echo "usage: issue-context.sh index|outline <repo-root> [names...]" >&2
+  printf '%s\n' "usage: issue-context.sh index|outline <repo-root> [names...]" >&2
   exit 2
 }
+
+# A capability or change name the outline can read: lowercase letters, digits
+# and hyphens, not starting with a hyphen. A case pattern, not grep, so a name
+# holding a newline cannot pass on one good line.
+name_ok() {
+  case $1 in
+    ''|-*|*[!a-z0-9-]*) return 1 ;;
+  esac
+  return 0
+}
+
+# Text is printed with printf, never echo: some sh builds expand backslashes
+# in echo, which would turn repo text such as C:\new into a newline.
 
 mode=${1:-}
 root=${2:-}
@@ -61,10 +75,10 @@ section() {
     else
       n=0
     fi
-    echo "## $1 $n"
+    printf '## %s %s\n' "$1" "$n"
     [ -n "$3" ] && printf '%s\n' "$3"
   else
-    echo "## $1 absent"
+    printf '## %s absent\n' "$1"
   fi
 }
 
@@ -73,7 +87,7 @@ find_doc() {
   for f in "$root"/docs/*.md; do
     [ -f "$f" ] || continue
     if grep -q -E "$1" "$f"; then
-      echo "$f"
+      printf '%s\n' "$f"
       return 0
     fi
   done
@@ -90,10 +104,9 @@ if [ "$mode" = index ]; then
     dom=$(printf '%s' "$dom" | cut -c 1-300)
   fi
   if [ "$dpresent" = 1 ]; then
-    echo "## domain"
-    printf '%s\n' "$dom"
+    printf '## domain\n%s\n' "$dom"
   else
-    echo "## domain absent"
+    printf '## domain absent\n'
   fi
 
   # personas
@@ -164,7 +177,7 @@ if [ "$mode" = index ]; then
   fi
   section glossary "$gpresent" "$glos"
 
-  # capabilities
+  # capabilities (a folder whose name the outline would reject is left out)
   caps=""
   cpresent=0
   if [ -d "$root/openspec/specs" ]; then
@@ -173,6 +186,7 @@ if [ "$mode" = index ]; then
       [ -d "$d" ] || continue
       name=${d%/}
       name=${name##*/}
+      name_ok "$name" || continue
       purpose=""
       [ -f "$d/spec.md" ] && purpose=$(paragraph "$d/spec.md" "## Purpose" | first_sentence)
       line="$name | $purpose"
@@ -192,6 +206,7 @@ $line"; fi
       name=${d%/}
       name=${name##*/}
       [ "$name" = archive ] && continue
+      name_ok "$name" || continue
       why=""
       [ -f "$d/proposal.md" ] && why=$(paragraph "$d/proposal.md" "## Why" | first_sentence)
       line="$name | $why"
@@ -208,6 +223,7 @@ $line"; fi
     [ -f "$f" ] || continue
     base=${f##*/}
     case $base in
+      *[!A-Za-z0-9._-]*) continue ;;
       *KNOWN_ISSUES*|*BACKLOG*) ;;
       *) continue ;;
     esac
@@ -234,16 +250,17 @@ for name in "$@"; do
     if [ -z "$skipped" ]; then skipped=$name; else skipped="$skipped $name"; fi
     continue
   fi
-  if ! printf '%s\n' "$name" | grep -q -E '^[a-z0-9][a-z0-9-]*$'; then
-    echo "## rejected $name"
+  if ! name_ok "$name"; then
+    # Shown with odd characters as "?", so a newline cannot forge a line.
+    printf '## rejected %s\n' "$(printf '%s' "$name" | tr -c 'A-Za-z0-9._/ -' '?')"
     continue
   fi
   found=0
   spec="$root/openspec/specs/$name/spec.md"
   if [ -f "$spec" ]; then
     found=1
-    echo "## capability $name"
-    echo "Purpose: $(paragraph "$spec" "## Purpose")"
+    printf '## capability %s\n' "$name"
+    printf 'Purpose: %s\n' "$(paragraph "$spec" "## Purpose")"
     awk '
       function trim(s) { sub(/^[ \t\r]+/, "", s); sub(/[ \t\r]+$/, "", s); return s }
       /^### Requirement:/ { t = $0; sub(/^### Requirement:/, "", t); print "- " trim(t); next }
@@ -252,12 +269,12 @@ for name in "$@"; do
   fi
   if [ "$name" != archive ] && [ -d "$root/openspec/changes/$name" ]; then
     found=1
-    echo "## change $name"
+    printf '## change %s\n' "$name"
     why=""
     [ -f "$root/openspec/changes/$name/proposal.md" ] && why=$(paragraph "$root/openspec/changes/$name/proposal.md" "## Why" | cut -c 1-600)
-    echo "Why: $why"
+    printf 'Why: %s\n' "$why"
   fi
-  [ "$found" = 1 ] || echo "## not-found $name"
+  [ "$found" = 1 ] || printf '## not-found %s\n' "$name"
 done
-[ -n "$skipped" ] && echo "## skipped $skipped"
+[ -n "$skipped" ] && printf '## skipped %s\n' "$(printf '%s' "$skipped" | tr -c 'A-Za-z0-9._/ -' '?')"
 exit 0

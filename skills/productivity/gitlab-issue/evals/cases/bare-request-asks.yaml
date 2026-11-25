@@ -1,0 +1,36 @@
+id: bare-request-asks
+title: A request with no subject asks and creates nothing
+description: |
+  "create a gitlab issue" with nothing else, in a checkout whose project
+  resolves: the skill asks what the issue is about, or ends on the no-subject
+  reason. No draft and nothing created.
+
+context:
+  repo_fixture: scripts/fixtures/repo-full
+  git:
+    init: true
+    remotes:
+      - name: origin
+        url: https://gitlab.example.com/team/billing-export.git
+
+input:
+  prompt: |
+    create a gitlab issue
+
+expect:
+  must_not_contain:
+    - "## Issue draft"
+    - "Issue created:"
+
+judge:
+  type: rule_based
+  failure:
+    - output_contains:
+        any:
+          - "## Issue draft"
+          - "Issue created:"
+  success:
+    - output_contains:
+        any:
+          - "?"
+          - "Not created: no subject given"
